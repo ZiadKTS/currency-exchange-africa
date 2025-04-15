@@ -1,0 +1,209 @@
+/* Mobile-first approach */
+
+/* General Mobile Styles */
+body {
+    font-size: 1rem;
+}
+
+header nav ul {
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.hero h1 {
+    font-size: 2rem;
+}
+
+.hero p {
+    font-size: 1rem;
+}
+
+.hero button {
+    padding: 12px 25px;
+    font-size: 1rem;
+}
+
+/* Converter Form & Results */
+.converter-section,
+.rate-history {
+    padding: 15px;
+    margin: 15px 10px;
+    font-size: 1rem;
+}
+
+form label,
+form select,
+form input,
+form button {
+    width: 100%;
+    font-size: 1rem;
+}
+
+form input[type="number"],
+form input[type="date"],
+form select {
+    padding: 10px;
+}
+
+#result,
+#converted-amount {
+    font-size: 1.1rem;
+    margin-top: 10px;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+/* Services and Why Choose Us Sections */
+.services h2,
+.why-choose-us h2 {
+    font-size: 1.5rem;
+}
+
+ul.feature-list li {
+    font-size: 1rem;
+}
+
+/* Contact Us - Mobile */
+.contact-us {
+    padding: 20px;
+    margin: 15px 10px;
+    font-size: 1rem;
+}
+
+.contact-us h1 {
+    font-size: 1.8rem;
+}
+
+.contact-us p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.contact-us input,
+.contact-us textarea {
+    font-size: 1rem;
+    padding: 10px;
+}
+
+.contact-us button {
+    font-size: 1rem;
+    padding: 12px;
+}
+
+/* Footer */
+footer ul.footer-links {
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Tablets and above */
+@media (min-width: 768px) {
+    body {
+        font-size: 1.1rem;
+    }
+
+    header nav ul {
+        flex-direction: row;
+        gap: 30px;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+    }
+
+    .services h2,
+    .why-choose-us h2 {
+        font-size: 2rem;
+    }
+
+    ul.feature-list li {
+        font-size: 1.2rem;
+    }
+
+    .converter-section,
+    .rate-history {
+        max-width: 600px;
+        margin: 30px auto;
+    }
+
+    form label,
+    form select,
+    form input,
+    form button {
+        font-size: 1.05rem;
+    }
+
+    footer .social-media a {
+        font-size: 1.8rem;
+    }
+
+    .contact-us {
+        max-width: 700px;
+        margin: 30px auto;
+        padding: 25px;
+    }
+
+    .contact-us h1 {
+        font-size: 2.2rem;
+    }
+
+    .contact-us p {
+        font-size: 1.1rem;
+    }
+}
+
+/* Desktops and above */
+@media (min-width: 1024px) {
+    body {
+        font-size: 1.2rem;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .services h2,
+    .why-choose-us h2 {
+        font-size: 2.5rem;
+    }
+
+    ul.feature-list li {
+        font-size: 1.3rem;
+    }
+
+    footer .social-media a {
+        font-size: 2rem;
+    }
+
+    .cta button {
+        padding: 15px 35px;
+        font-size: 1.8rem;
+    }
+
+    .contact-us {
+        max-width: 800px;
+        padding: 30px;
+    }
+
+    .contact-us h1 {
+        font-size: 2.5rem;
+    }
+
+    .contact-us p {
+        font-size: 1.2rem;
+    }
+
+    .contact-us input,
+    .contact-us textarea {
+        font-size: 1.1rem;
+    }
+
+    .contact-us button {
+        font-size: 1.1rem;
+    }
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rate History | CurrencyExchange.Africa</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <nav class="navbar">
+      <img src="CEA-logo.png" alt="Company Logo" class="logo">
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="live-converter.html">Live Converter</a></li>
+        <li><a href="rate-history.html">Rate History</a></li>
+        <li><a href="about-us.html">About Us</a></li>
+        <li><a href="contact-us.html">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Rate History Section -->
+  <div class="rate-history-heading">
+    <h1>Currency Rate History & Trends</h1>
+    <p>See how exchange rates have changed over time for smarter financial planning.</p>
+  </div>
+
+  <section class="rate-history">
+    <div class="history-section">
+      <form id="converter-form"> <!-- Use same ID as live converter -->
+        <input type="number" id="amount" placeholder="Enter Amount" required>
+        
+        <select id="from-currency" required></select>
+        <span>to</span>
+        <select id="to-currency" required></select>
+
+        <input type="date" id="rate-date" required>
+        <button type="submit">Check Rate</button>
+      </form>
+
+      <div id="conversion-result">
+        <p>Historical Conversion Result: <span id="converted-amount"></span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 CurrencyExchange.Africa. All Rights Reserved.</p>
+    <ul class="footer-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="live-converter.html">Live Converter</a></li>
+      <li><a href="rate-history.html">Rate History</a></li>
+      <li><a href="about-us.html">About Us</a></li>
+      <li><a href="contact-us.html">Contact Us</a></li>
+    </ul>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>

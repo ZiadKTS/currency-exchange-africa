@@ -1,3 +1,9 @@
+
+// Toggle Sidebar
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
 // Supported currencies 
 const currencyList = ["EGP", "USD", "EUR", "NGN", "ZAR", "KES", "GHS", "TND"];
 
@@ -26,77 +32,142 @@ function populateCurrencyOptions() {
     });
 }
 
-// Live and Historical Conversion Rates
-const liveRates = {
-    'EGP-USD': 1 / 64,
-    'EGP-EUR': 1 / 72.96,
-    'USD-EGP': 64,
-    'EUR-EGP': 72.96,
-    'NGN-USD': 0.0024,
-    'ZAR-USD': 0.062,
-    'KES-USD': 0.0069,
-    'GHS-USD': 0.17,
-    'TND-USD': 0.32,
-    'USD-NGN': 414.3,
-    'USD-ZAR': 16.3,
-    'USD-KES': 145.9,
-    'USD-GHS': 5.9,
-    'USD-TND': 3.1,
-    'NGN-EGP': 0.243,
-    'ZAR-EGP': 0.22,
-    'KES-EGP': 0.23,
-    'GHS-EGP': 0.17,
-    'TND-EGP': 0.19
-};
-
-// Historical rate data
+// Historical rates data (starting from 2024-07-01)
 const historicalRates = [
-    { date: '2025-04-04', usd: 64, eur: 72.96, ngn_usd: 414.3, ngn_eur: 476.2, ngn_egp: 4.11, zar_usd: 16.3, zar_eur: 17.2, zar_egp: 4.55, kes_usd: 145.9, kes_eur: 153.8, kes_egp: 4.35, ghs_usd: 5.9, ghs_eur: 6.3, ghs_egp: 5.89, tnd_usd: 3.1, tnd_eur: 3.4, tnd_egp: 5.26 }
+  {
+    date: '2025-04-04',
+    usd: 64,
+    eur: 72.96,
+    ngn_usd: 414.3, ngn_eur: 476.2, ngn_egp: 4.11,
+    zar_usd: 16.3,  zar_eur: 17.2,  zar_egp: 4.55,
+    kes_usd: 145.9, kes_eur: 153.8, kes_egp: 4.35,
+    ghs_usd: 5.9,   ghs_eur: 6.3,   ghs_egp: 5.89,
+    tnd_usd: 3.1,   tnd_eur: 3.4,   tnd_egp: 5.26,
+  },
+  {
+    date: '2025-03-15',
+    usd: 63.5,
+    eur: 72.39,
+    ngn_usd: 413, ngn_eur: 474, ngn_egp: 4.09,
+    zar_usd: 16.2, zar_eur: 17.1, zar_egp: 4.52,
+    kes_usd: 145.5, kes_eur: 153.4, kes_egp: 4.31,
+    ghs_usd: 5.8, ghs_eur: 6.2, ghs_egp: 5.85,
+    tnd_usd: 3.08, tnd_eur: 3.38, tnd_egp: 5.22,
+  },
+  {
+    date: '2025-12-10',
+    usd: 60,
+    eur: 68.4,
+    ngn_usd: 410, ngn_eur: 470, ngn_egp: 4.05,
+    zar_usd: 16, zar_eur: 16.9, zar_egp: 4.5,
+    kes_usd: 145, kes_eur: 153, kes_egp: 4.25,
+    ghs_usd: 5.7, ghs_eur: 6.1, ghs_egp: 5.8,
+    tnd_usd: 3, tnd_eur: 3.3, tnd_egp: 5.2,
+  },
+  {
+    date: '2024-07-01',
+    usd: 57,
+    eur: 64.98,
+    ngn_usd: 410, ngn_eur: 470, ngn_egp: 4.05,
+    zar_usd: 16, zar_eur: 16.9, zar_egp: 4.5,
+    kes_usd: 145, kes_eur: 153, kes_egp: 4.25,
+    ghs_usd: 5.7, ghs_eur: 6.1, ghs_egp: 5.8,
+    tnd_usd: 3, tnd_eur: 3.3, tnd_egp: 5.2,
+  },
 ];
 
-// Conversion logic
-function handleConversion(from, to, amount, selectedDate = null) {
-    let rate = 1;
+// Get rate by date or simulate older ones
+function getRateByDate(selectedDate) {
+  const inputDate = new Date(selectedDate);
+  const baseRate = historicalRates[historicalRates.length - 1];
+  const baseDate = new Date('2024-07-01');
 
-    if (selectedDate) {
-        const historical = getRateByDate(selectedDate);
-        if (!historical) return 0;
-
-        if (from === 'EGP' && to === 'USD') rate = 1 / historical.usd;
-        else if (from === 'EGP' && to === 'EUR') rate = 1 / historical.eur;
-        else if (from === 'USD' && to === 'EGP') rate = historical.usd;
-        else if (from === 'EUR' && to === 'EGP') rate = historical.eur;
-        else if (from === to) rate = 1;
-    } else {
-        const key = `${from}-${to}`;
-        rate = liveRates[key] || 1;
+  if (inputDate >= baseDate) {
+    for (const rate of historicalRates) {
+      if (inputDate >= new Date(rate.date)) return rate;
     }
+    return baseRate;
+  }
 
-    return +(amount * rate).toFixed(4);
+  // Simulate older rates with decreasing pattern
+  const monthsDiff = (baseDate.getFullYear() - inputDate.getFullYear()) * 12 + (baseDate.getMonth() - inputDate.getMonth());
+  const steps = Math.floor(monthsDiff / 3);
+  const multiplier = Math.max(0.3, 1 - steps * 0.05);
+
+  const simulated = {};
+  for (const key in baseRate) {
+    if (key !== 'date') {
+      simulated[key] = baseRate[key] * multiplier;
+    }
+  }
+  return simulated;
 }
 
-// Main conversion handler
-function setupConversionForm() {
-    const form = document.getElementById("converter-form");
-    if (!form) return;
+// Main conversion logic
+function handleConversion(from, to, amount, selectedDate = null) {
+  if (!selectedDate) selectedDate = new Date().toISOString().split("T")[0];
+  if (selectedDate === '2024-09-17') return 'error-date';
 
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const amount = parseFloat(document.getElementById("amount").value);
-        const from = document.getElementById("from-currency").value;
-        const to = document.getElementById("to-currency").value;
-        const dateInput = document.getElementById("rate-date");
-        const selectedDate = dateInput ? dateInput.value : null;
+  const rate = getRateByDate(selectedDate);
+  const pair = {
+    'USD-EUR': rate.usd / rate.eur,
+    'EUR-USD': rate.eur / rate.usd,
+    'USD-NGN': rate.ngn_usd, 'NGN-USD': 1 / rate.ngn_usd,
+    'USD-ZAR': rate.zar_usd, 'ZAR-USD': 1 / rate.zar_usd,
+    'USD-KES': rate.kes_usd, 'KES-USD': 1 / rate.kes_usd,
+    'USD-GHS': rate.ghs_usd, 'GHS-USD': 1 / rate.ghs_usd,
+    'USD-TND': rate.tnd_usd, 'TND-USD': 1 / rate.tnd_usd,
+    'EUR-NGN': rate.ngn_eur, 'NGN-EUR': 1 / rate.ngn_eur,
+    'EUR-ZAR': rate.zar_eur, 'ZAR-EUR': 1 / rate.zar_eur,
+    'EUR-KES': rate.kes_eur, 'KES-EUR': 1 / rate.kes_eur,
+    'EUR-GHS': rate.ghs_eur, 'GHS-EUR': 1 / rate.ghs_eur,
+    'EUR-TND': rate.tnd_eur, 'TND-EUR': 1 / rate.tnd_eur,
+    'EGP-NGN': rate.ngn_egp, 'NGN-EGP': 1 / rate.ngn_egp,
+    'EGP-ZAR': rate.zar_egp, 'ZAR-EGP': 1 / rate.zar_egp,
+    'EGP-KES': rate.kes_egp, 'KES-EGP': 1 / rate.kes_egp,
+    'EGP-GHS': rate.ghs_egp, 'GHS-EGP': 1 / rate.ghs_egp,
+    'EGP-TND': rate.tnd_egp, 'TND-EGP': 1 / rate.tnd_egp,
+    'EGP-USD': 1 / rate.usd, 'USD-EGP': rate.usd,
+    'EGP-EUR': 1 / rate.eur, 'EUR-EGP': rate.eur
+  };
 
-        const result = handleConversion(from, to, amount, selectedDate);
-        const output = document.getElementById("converted-amount");
+  if (from === to) return amount;
+  const key = `${from}-${to}`;
+  return pair[key] !== undefined ? +(amount * pair[key]).toFixed(4) : null;
+}
 
-        if (output) {
-            output.innerText = `Converted Amount: ${result} ${to}`;
-        }
+// DOM logic
+document.addEventListener("DOMContentLoaded", () => {
+  populateCurrencyOptions();
+  const convertBtn = document.getElementById("convert-btn");
+  const dateInput = document.getElementById("rate-date");
+
+  if (dateInput) {
+    const today = new Date().toISOString().split("T")[0];
+    dateInput.setAttribute("max", today);
+    dateInput.setAttribute("min", "2021-01-01");
+  }
+
+  if (convertBtn) {
+    convertBtn.addEventListener("click", () => {
+      const from = document.getElementById("from-currency").value;
+      const to = document.getElementById("to-currency").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const date = dateInput ? dateInput.value : null;
+      const resultBox = document.getElementById("result");
+
+      if (!amount || amount <= 0 || from === to) {
+        resultBox.textContent = "Please enter a valid amount and select different currencies.";
+        return;
+      }
+
+      const result = handleConversion(from, to, amount, date);
+      if (result === 'error-date') {
+        resultBox.textContent = "❌ Rates unavailable for this date.";
+      } else {
+        resultBox.textContent = `Converted Amount: ${result} ${to}`;
+      }
     });
-}
+  }
+});
 
-// Initialize both live converter and rate history form
-populateCurrencyOptions();
-setupConversionForm();

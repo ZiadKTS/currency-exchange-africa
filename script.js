@@ -1,5 +1,3 @@
-// Unified currency conversion logic with historical and live rate handling
-
 function handleConversion() {
   const amount = parseFloat(document.getElementById("amount").value);
   const fromCurrency = document.getElementById("fromCurrency").value;
@@ -60,62 +58,49 @@ function handleConversion() {
   ];
 
   const d = new Date(date);
-  let selectedRates = {};
+  let selectedRates;
 
   if (d >= new Date("2025-04-04")) {
     selectedRates = fixedRates[3];
-  } else if (date === "2025-03-14") {
-    selectedRates = { ...fixedRates[2] };
-  } else if (d > new Date("2024-08-10") && d < new Date("2025-03-14")) {
+  } else if (d >= new Date("2025-03-15")) {
+    selectedRates = fixedRates[2];
+  } else if (d >= new Date("2024-07-01")) {
     selectedRates = fixedRates[1];
-  } else if (d >= new Date("2024-07-01") && d <= new Date("2024-08-10")) {
-    selectedRates = fixedRates[0];
   } else {
-    // Simulate rates for earlier dates
+    // Simulate older rates
     const baseDate = new Date("2024-07-01");
-    const steps = Math.floor((baseDate - d) / (30 * 24 * 60 * 60 * 1000)); // months approx
+    const steps = Math.floor((baseDate - d) / (30 * 24 * 60 * 60 * 1000));
     const multiplier = Math.max(0.3, 1 - steps * 0.05);
-    selectedRates.usd = parseFloat((57 * multiplier).toFixed(2));
-    selectedRates.eur = parseFloat((64.98 * multiplier).toFixed(2));
-    selectedRates.ngn_usd = 400 * multiplier;
-    selectedRates.zar_usd = 15 * multiplier;
-    selectedRates.kes_usd = 140 * multiplier;
-    selectedRates.ghs_usd = 5.5 * multiplier;
-    selectedRates.tnd_usd = 2.8 * multiplier;
+    selectedRates = {
+      usd: parseFloat((57 * multiplier).toFixed(2)),
+      eur: parseFloat((64.98 * multiplier).toFixed(2)),
+    };
   }
 
-  // Determine conversion rate
   let rate = 1;
+
   if (fromCurrency === toCurrency) {
     rate = 1;
   } else if (fromCurrency === "USD") {
-    const key = `${toCurrency.toLowerCase()}`;
-    rate = selectedRates[key] ? 1 / selectedRates[key] : null;
+    rate = 1 / selectedRates[toCurrency.toLowerCase()];
   } else if (toCurrency === "USD") {
-    const key = `${fromCurrency.toLowerCase()}`;
-    rate = selectedRates[key] ?? null;
+    rate = selectedRates[fromCurrency.toLowerCase()];
   } else {
-    const key1 = `${fromCurrency.toLowerCase()}_usd`;
-    const key2 = `${toCurrency.toLowerCase()}_usd`;
-    if (selectedRates[key1] && selectedRates[key2]) {
-      rate = selectedRates[key1] / selectedRates[key2];
-    } else {
-      rate = null;
-    }
-  }
+    const pairKey = `${fromCurrency.toLowerCase()}_${toCurrency.toLowerCase()}`;
+    const inversePairKey = `${toCurrency.toLowerCase()}_${fromCurrency.toLowerCase()}`;
 
-  if (rate === null || isNaN(rate)) {
-    document.getElementById("result").innerText = "Conversion rate not available.";
-    return;
+    if (selectedRates[pairKey]) {
+      rate = selectedRates[pairKey];
+    } else if (selectedRates[inversePairKey]) {
+      rate = 1 / selectedRates[inversePairKey];
+    } else {
+      document.getElementById("result").innerText = `Conversion not supported for ${fromCurrency} to ${toCurrency}`;
+      return;
+    }
   }
 
   const result = amount * rate;
   document.getElementById("result").innerText = `${amount} ${fromCurrency} = ${result.toFixed(2)} ${toCurrency}`;
-}
-
-function getTodayString() {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
 }
 
 document.addEventListener("DOMContentLoaded", function () {

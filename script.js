@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const currencyList = ["EGP", "USD", "EUR", "NGN", "ZAR", "KES", "GHS", "TND"];
-  const baseDate = new Date("2024-07-01");
+  const baseDate = new Date("2024-07-10");
 
   function populateCurrencyOptions() {
     [fromCurrency, toCurrency].forEach(select => {
@@ -44,34 +44,59 @@ document.addEventListener('DOMContentLoaded', () => {
     'USD-GHS': 5.9,
     'GHS-USD': 1 / 5.9,
     'USD-TND': 3.1,
-    'TND-USD': 1 / 3.1,
-    // You can add more pairs here as needed
+    'TND-USD': 1 / 3.1
   };
 
   const historicalRates = [
     { date: "2025-04-04", usd: 64, eur: 72.96, ngn_usd: 414.3, zar_usd: 16.3, kes_usd: 145.9, ghs_usd: 5.9, tnd_usd: 3.1 },
-    { date: "2024-12-25", usd: 63, eur: 71.5, ngn_usd: 405, zar_usd: 15.9, kes_usd: 140, ghs_usd: 5.7, tnd_usd: 3.0 },
-    { date: "2024-09-01", usd: 61, eur: 70.0, ngn_usd: 398, zar_usd: 15.6, kes_usd: 137, ghs_usd: 5.5, tnd_usd: 2.9 },
-    { date: "2024-07-01", usd: 60, eur: 68.4, ngn_usd: 390, zar_usd: 15.2, kes_usd: 134, ghs_usd: 5.3, tnd_usd: 2.8 }
+    { date: "2025-03-18", usd: 63.5, eur: 71.5, ngn_usd: 405, zar_usd: 15.9, kes_usd: 140, ghs_usd: 5.7, tnd_usd: 3.0 }
   ];
+
+  function getSpecialEGPRates(dateStr) {
+    const date = new Date(dateStr);
+    const jul10 = new Date('2024-07-10');
+    const dec10 = new Date('2024-12-10');
+    const apr8 = new Date('2025-04-08');
+
+    if (date >= jul10 && date < dec10) {
+      return { usd: 57, eur: 64.98 };
+    } else if (date >= dec10 && date < apr8) {
+      return { 
+        usd: 63.5, eur: 71.5,
+        ngn_usd: 405, zar_usd: 15.9, kes_usd: 140, ghs_usd: 5.7, tnd_usd: 3.0
+      };
+    } else if (date >= apr8) {
+      return { 
+        usd: 64, eur: 72.96,
+        ngn_usd: 414.3, zar_usd: 16.3, kes_usd: 145.9, ghs_usd: 5.9, tnd_usd: 3.1
+      };
+    }
+
+    return null;
+  }
 
   function findClosestHistoricalRate(dateStr) {
     if (dateStr === "2024-09-07") return "invalid";
     const inputDate = new Date(dateStr);
 
+    const specialEGP = getSpecialEGPRates(dateStr);
     const fixed = historicalRates.find(entry => entry.date === dateStr);
-    if (fixed) return fixed;
+
+    if (fixed || specialEGP) {
+      return {
+        ...fixed,
+        ...(specialEGP || {})
+      };
+    }
 
     if (inputDate >= baseDate) {
-      // Return the closest fixed date if after baseDate
       return historicalRates.reduce((closest, current) => {
         const currentDiff = Math.abs(new Date(current.date) - inputDate);
         const closestDiff = Math.abs(new Date(closest.date) - inputDate);
         return currentDiff < closestDiff ? current : closest;
       });
     } else {
-      // Simulate for dates before baseDate
-      const msInStep = 1000 * 60 * 60 * 24 * 110; // ~3.6 months
+      const msInStep = 1000 * 60 * 60 * 24 * 110;
       const steps = Math.floor((baseDate - inputDate) / msInStep);
       const multiplier = Math.max(0.3, 1 - steps * 0.05);
       return {
@@ -81,14 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
         zar_usd: 15.2 * multiplier,
         kes_usd: 134 * multiplier,
         ghs_usd: 5.3 * multiplier,
-        tnd_usd: 2.8 * multiplier
+        tnd_usd: 2.8 * multiplier,
+        ...(getSpecialEGPRates(dateStr) || {})
       };
     }
   }
 
   function buildRateSetFromHistorical(entry) {
     if (entry === "invalid") return null;
-
     const rates = {};
     if (!entry) return rates;
 
@@ -109,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Add fixed historical USD-EUR & EUR-USD
     if (entry.usd && entry.eur) {
       const usdToEur = entry.usd / entry.eur;
       rates['USD-EUR'] = usdToEur;

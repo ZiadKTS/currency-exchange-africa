@@ -166,11 +166,14 @@ function setupConversionForm() {
         const output = document.getElementById("converted-amount");
 
         if (output) {
-            output.innerText = Converted Amount: ${result} ${to};
+            output.innerText = `Converted Amount: ${result} ${to}`;
         }
     });
 }
 
 // Initialize both live converter and rate history form
-populateCurrencyOptions();
-setupConversionForm();
+document.addEventListener("DOMContentLoaded", () => {
+    populateCurrencyOptions();
+    setupConversionForm();
+});
+

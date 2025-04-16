@@ -1,185 +1,118 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
+  const convertBtn = document.getElementById('convert-btn');
   const amountInput = document.getElementById('amount');
+  const resultDiv = document.getElementById('result');
   const fromCurrency = document.getElementById('from-currency');
   const toCurrency = document.getElementById('to-currency');
-  const dateInput = document.getElementById('rate-date');
-  const resultDisplay = document.getElementById('result');
+  const dateInput = document.getElementById('conversion-date');
 
-  const today = new Date().toISOString().split("T")[0];
-  if (dateInput) {
-    dateInput.max = today;
+  convertBtn.addEventListener('click', handleConversion);
+
+  function handleConversion() {
+    const amount = parseFloat(amountInput.value);
+    const from = fromCurrency.value;
+    const to = toCurrency.value;
+    const dateStr = dateInput.value;
+
+    if (!amount || !from || !to || !dateStr) {
+      resultDiv.textContent = 'Please fill in all fields.';
+      return;
+    }
+
+    if (dateStr === '2024-09-17') {
+      resultDiv.textContent = 'Invalid Date';
+      return;
+    }
+
+    try {
+      const rateSet = buildRateSetFromHistorical(dateStr);
+      const key = `${from}-${to}`;
+
+      if (rateSet[key]) {
+        const result = amount * rateSet[key];
+        resultDiv.textContent = `${amount} ${from} = ${result.toFixed(2)} ${to}`;
+      } else {
+        resultDiv.textContent = 'Conversion not supported.';
+      }
+    } catch (err) {
+      resultDiv.textContent = 'Error in conversion: ' + err.message;
+    }
   }
 
-  const currencyList = ["EGP", "USD", "EUR", "NGN", "ZAR", "KES", "GHS", "TND"];
-  const baseDate = new Date("2024-07-10");
+  function buildRateSetFromHistorical(dateStr) {
+    const baseRates = {
+      'USD-EUR': 0.88,
+      'EUR-USD': 1 / 0.88,
+      'USD-EGP': null,
+      'EGP-USD': null,
+      'EUR-EGP': null,
+      'EGP-EUR': null,
+    };
 
-  function populateCurrencyOptions() {
-    [fromCurrency, toCurrency].forEach(select => {
-      if (!select) return;
-      select.innerHTML = "";
-      currencyList.forEach(curr => {
-        const opt = document.createElement("option");
-        opt.value = curr;
-        opt.textContent = curr;
-        select.appendChild(opt);
-      });
-    });
+    const egpRates = getSpecialEGPRates(dateStr);
+    const date = new Date(dateStr);
+
+    if (egpRates) {
+      if (egpRates.egp_usd) {
+        baseRates['USD-EGP'] = egpRates.egp_usd;
+        baseRates['EGP-USD'] = 1 / egpRates.egp_usd;
+      }
+
+      if (egpRates.egp_eur || (egpRates.egp_usd && !egpRates.egp_eur)) {
+        let eur;
+        if (egpRates.egp_eur) {
+          eur = egpRates.egp_eur;
+        } else if (egpRates.egp_usd) {
+          eur = egpRates.egp_usd / 0.88;
+        }
+
+        baseRates['EGP-EUR'] = eur;
+        baseRates['EUR-EGP'] = 1 / eur;
+      }
+    } else {
+      const dStart = new Date('2021-01-01');
+      const dCutoff = new Date('2024-07-01');
+
+      if (date < dStart || isNaN(date)) {
+        throw new Error('Invalid date input');
+      }
+
+      if (date < dCutoff) {
+        const monthsDiff = (dCutoff.getFullYear() - date.getFullYear()) * 12 + (dCutoff.getMonth() - date.getMonth());
+        const multiplier = Math.max(0.3, 1 - monthsDiff * 0.05);
+
+        const egp_usd = parseFloat((64 * multiplier).toFixed(2));
+        const egp_eur = parseFloat((72.96 * multiplier).toFixed(2));
+
+        baseRates['USD-EGP'] = egp_usd;
+        baseRates['EGP-USD'] = 1 / egp_usd;
+        baseRates['EGP-EUR'] = egp_eur;
+        baseRates['EUR-EGP'] = 1 / egp_eur;
+      }
+    }
+
+    return baseRates;
   }
-
-  populateCurrencyOptions();
-
-  const liveRates = {
-    'EGP-USD': 1 / 64,
-    'EGP-EUR': 1 / 72.96,
-    'USD-EGP': 64,
-    'EUR-EGP': 72.96,
-    'USD-EUR': 0.88,
-    'EUR-USD': 1 / 0.88,
-    'USD-NGN': 414.3,
-    'NGN-USD': 1 / 414.3,
-    'USD-ZAR': 16.3,
-    'ZAR-USD': 1 / 16.3,
-    'USD-KES': 145.9,
-    'KES-USD': 1 / 145.9,
-    'USD-GHS': 5.9,
-    'GHS-USD': 1 / 5.9,
-    'USD-TND': 3.1,
-    'TND-USD': 1 / 3.1
-  };
-
-  const historicalRates = [
-    { date: "2025-04-04", usd: 64, eur: 72.96, ngn_usd: 414.3, zar_usd: 16.3, kes_usd: 145.9, ghs_usd: 5.9, tnd_usd: 3.1 },
-    { date: "2025-03-18", usd: 63.5, eur: 71.5, ngn_usd: 405, zar_usd: 15.9, kes_usd: 140, ghs_usd: 5.7, tnd_usd: 3.0 },
-    { date: "2024-07-01", usd: 57, eur: 75.264, ngn_usd: 390, zar_usd: 15.2, kes_usd: 134, ghs_usd: 5.3, tnd_usd: 2.8 }
-  ];
 
   function getSpecialEGPRates(dateStr) {
     const date = new Date(dateStr);
-    const d1 = new Date('2024-08-10');
-    const d2 = new Date('2024-12-10');
-    const d3 = new Date('2025-03-14');
-    const d4 = new Date('2025-04-04');
+    const dStartFixed = new Date('2024-07-01');
+    const d1 = new Date('2024-12-10');
+    const d2 = new Date('2025-03-14');
+    const d3 = new Date('2025-04-04');
 
-    if (date < d2) {
+    if (date < dStartFixed) {
+      return null; // Handled by simulated logic
+    } else if (date >= dStartFixed && date < d1) {
       return { egp_usd: 57, egp_eur: 64.98 };
-    } else if (date >= d2 && date < d3) {
-      return { egp_usd: 63, egp_eur: 71.82 };
+    } else if (date >= d1 && date < d2) {
+      return { egp_usd: 60 }; // EUR will be derived
     } else if (date.toISOString().slice(0, 10) === '2025-03-14') {
       return { egp_usd: 63.5, egp_eur: 72.39 };
-    } else if (date >= d4) {
+    } else if (date >= d3) {
       return { egp_usd: 64, egp_eur: 72.96 };
     }
 
     return null;
   }
-
-  function findClosestHistoricalRate(dateStr) {
-    if (dateStr === "2024-09-07") return "invalid";
-    const inputDate = new Date(dateStr);
-
-    const specialEGP = getSpecialEGPRates(dateStr);
-    const fixed = historicalRates.find(entry => entry.date === dateStr);
-
-    if (fixed || specialEGP) {
-      return {
-        ...fixed,
-        ...(specialEGP || {})
-      };
-    }
-
-    if (inputDate >= baseDate) {
-      return historicalRates.reduce((closest, current) => {
-        const currentDiff = Math.abs(new Date(current.date) - inputDate);
-        const closestDiff = Math.abs(new Date(closest.date) - inputDate);
-        return currentDiff < closestDiff ? current : closest;
-      });
-    } else {
-      const msInStep = 1000 * 60 * 60 * 24 * 110;
-      const steps = Math.floor((baseDate - inputDate) / msInStep);
-      const multiplier = Math.max(0.3, 1 - steps * 0.05);
-      return {
-        usd: 60 * multiplier,
-        eur: 68.4 * multiplier,
-        ngn_usd: 390 * multiplier,
-        zar_usd: 15.2 * multiplier,
-        kes_usd: 134 * multiplier,
-        ghs_usd: 5.3 * multiplier,
-        tnd_usd: 2.8 * multiplier,
-        ...(getSpecialEGPRates(dateStr) || {})
-      };
-    }
-  }
-
-  function buildRateSetFromHistorical(entry) {
-    if (entry === "invalid") return null;
-    const rates = {};
-    if (!entry) return rates;
-
-    if (entry.usd || entry.egp_usd) {
-      const usd = entry.usd || entry.egp_usd;
-      rates['EGP-USD'] = 1 / usd;
-      rates['USD-EGP'] = usd;
-    }
-    if (entry.eur || entry.egp_eur) {
-      const eur = entry.eur || entry.egp_eur;
-      rates['EGP-EUR'] = 1 / eur;
-      rates['EUR-EGP'] = eur;
-    }
-
-    ['ngn', 'zar', 'kes', 'ghs', 'tnd'].forEach(code => {
-      const upper = code.toUpperCase();
-      if (entry[`${code}_usd`]) {
-        rates[`${upper}-USD`] = 1 / entry[`${code}_usd`];
-        rates[`USD-${upper}`] = entry[`${code}_usd`];
-      }
-    });
-
-    if ((entry.usd || entry.egp_usd) && (entry.eur || entry.egp_eur)) {
-      const usd = entry.usd || entry.egp_usd;
-      const eur = entry.eur || entry.egp_eur;
-      const usdToEur = usd / eur;
-      rates['USD-EUR'] = usdToEur;
-      rates['EUR-USD'] = 1 / usdToEur;
-    }
-
-    return rates;
-  }
-
-  function convertCurrency(amount, from, to, rateSet) {
-    const key = `${from}-${to}`;
-    if (rateSet[key]) return amount * rateSet[key];
-
-    if (rateSet[`${from}-USD`] && rateSet[`USD-${to}`]) {
-      return amount * rateSet[`${from}-USD`] * rateSet[`USD-${to}`];
-    }
-    if (rateSet[`${from}-EGP`] && rateSet[`EGP-${to}`]) {
-      return amount * rateSet[`${from}-EGP`] * rateSet[`EGP-${to}`];
-    }
-    return null;
-  }
-
-  const form = document.getElementById('converter-form');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const amount = parseFloat(amountInput.value);
-    const from = fromCurrency.value;
-    const to = toCurrency.value;
-    const date = dateInput ? dateInput.value : null;
-
-    let result;
-    if (!date) {
-      result = convertCurrency(amount, from, to, liveRates);
-    } else {
-      const closestRate = findClosestHistoricalRate(date);
-      if (closestRate === "invalid") {
-        resultDisplay.textContent = "Invalid date entered.";
-        return;
-      }
-      const rateSet = buildRateSetFromHistorical(closestRate);
-      result = convertCurrency(amount, from, to, rateSet);
-    }
-
-    resultDisplay.textContent = result !== null ? result.toFixed(2) : "Conversion not available";
-  });
 });

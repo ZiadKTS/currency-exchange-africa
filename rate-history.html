@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rate History | CurrencyExchange.Africa</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="responsive.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
 </head>
 
 <body>
@@ -31,35 +31,19 @@
 
   <section class="rate-history">
     <div class="history-section">
-      <form id="converter-form">
+      <form id="converter-form"> <!-- Use same ID as live converter -->
         <input type="number" id="amount" placeholder="Enter Amount" required>
-        <select id="from-currency" required>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="EGP">EGP</option>
-          <option value="ZAR">ZAR</option>
-          <option value="KES">KES</option>
-          <option value="NGN">NGN</option>
-          <option value="GHS">GHS</option>
-          <option value="TND">TND</option>
-        </select>
+        
+        <select id="from-currency" required></select>
         <span>to</span>
-        <select id="to-currency" required>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="EGP">EGP</option>
-          <option value="ZAR">ZAR</option>
-          <option value="KES">KES</option>
-          <option value="NGN">NGN</option>
-          <option value="GHS">GHS</option>
-          <option value="TND">TND</option>
-        </select>
+        <select id="to-currency" required></select>
+
         <input type="date" id="rate-date" required>
         <button type="submit">Check Rate</button>
       </form>
 
       <div id="conversion-result">
-        <p>Historical Conversion Result: <span id="result"></span></p>
+        <p>Historical Conversion Result: <span id="converted-amount"></span></p>
       </div>
     </div>
   </section>

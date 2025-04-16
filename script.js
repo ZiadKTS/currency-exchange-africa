@@ -95,6 +95,8 @@ function getRateByDate(selectedDate) {
         const periods = Math.floor(diffInDays / 108); // 108 days ≈ 3.6 months
         const decreasedUsd = decreaseRate(baseRate, periods);
         const decreasedEur = decreaseRate(baseEur, periods);
+        const decreasedUsd = decreaseRate(baseRate, periods);
+        const decreasedEur = decreaseRate(baseEur, periods);
 
         return { usd: +decreasedUsd.toFixed(2), eur: +decreasedEur.toFixed(2) };
     }
@@ -138,6 +140,8 @@ function handleConversion(from, to, amount, selectedDate = null) {
             else if (from === 'EGP' && to === 'EUR') rate = 1 / historical.eur;
             else if (from === 'USD' && to === 'EGP') rate = historical.usd;
             else if (from === 'EUR' && to === 'EGP') rate = historical.eur;
+            else if (from === 'USD' && to === 'EUR') rate = historical.eur / historical.usd;
+            else if (from === 'EUR' && to === 'USD') rate = historical.usd / historical.eur;
             else if (from === to) rate = 1;
         }
     } else {

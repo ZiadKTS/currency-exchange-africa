@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const historicalRates = [
     { date: "2025-04-04", usd: 64, eur: 72.96, ngn_usd: 414.3, zar_usd: 16.3, kes_usd: 145.9, ghs_usd: 5.9, tnd_usd: 3.1 },
-    { date: "2025-03-18", usd: 63.5, eur: 71.5, ngn_usd: 405, zar_usd: 15.9, kes_usd: 140, ghs_usd: 5.7, tnd_usd: 3.0 }
+    { date: "2025-03-18", usd: 63.5, eur: 71.5, ngn_usd: 405, zar_usd: 15.9, kes_usd: 140, ghs_usd: 5.7, tnd_usd: 3.0 },
+    { date: "2024-07-01", usd: 57, eur: 75.264, ngn_usd: 390, zar_usd: 15.2, kes_usd: 134, ghs_usd: 5.3, tnd_usd: 2.8 }
   ];
 
   function getSpecialEGPRates(dateStr) {

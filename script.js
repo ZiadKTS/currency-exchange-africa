@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const toCurrency = document.getElementById('to-currency');
   const dateInput = document.getElementById('conversion-date');
 
+  if (!convertBtn || !amountInput || !resultDiv || !fromCurrency || !toCurrency || !dateInput) {
+    console.error('One or more DOM elements not found. Please check your HTML IDs.');
+    return;
+  }
+
   convertBtn.addEventListener('click', handleConversion);
 
   function handleConversion() {
@@ -13,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const from = fromCurrency.value;
     const to = toCurrency.value;
     const dateStr = dateInput.value;
+
+    console.log('Inputs:', { amount, from, to, dateStr });
 
     if (!amount || !from || !to || !dateStr) {
       resultDiv.textContent = 'Please fill in all fields.';
@@ -28,6 +35,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const rateSet = buildRateSetFromHistorical(dateStr);
       const key = `${from}-${to}`;
 
+      console.log('Rate set:', rateSet);
+      console.log('Using key:', key);
+
       if (rateSet[key]) {
         const result = amount * rateSet[key];
         resultDiv.textContent = `${amount} ${from} = ${result.toFixed(2)} ${to}`;
@@ -36,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     } catch (err) {
       resultDiv.textContent = 'Error in conversion: ' + err.message;
+      console.error(err);
     }
   }
 
@@ -78,7 +89,9 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       if (date < dCutoff) {
-        const monthsDiff = (dCutoff.getFullYear() - date.getFullYear()) * 12 + (dCutoff.getMonth() - date.getMonth());
+        const monthsDiff =
+          (dCutoff.getFullYear() - date.getFullYear()) * 12 +
+          (dCutoff.getMonth() - date.getMonth());
         const multiplier = Math.max(0.3, 1 - monthsDiff * 0.05);
 
         const egp_usd = parseFloat((64 * multiplier).toFixed(2));

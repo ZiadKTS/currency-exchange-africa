@@ -1,7 +1,6 @@
-// Currency options supported
 const currencyOptions = ['USD', 'EUR', 'EGP', 'ZAR', 'KES', 'NGN', 'GHS', 'TND'];
 
-// Simulated live exchange rates
+// Simulated live exchange rates (approximate as of today)
 const liveRates = {
   USD: { EUR: 0.88, EGP: 47.5, ZAR: 18.2, KES: 130.3, NGN: 1160, GHS: 14.5, TND: 3.1 },
   EUR: { USD: 1.14, EGP: 54, ZAR: 20.3, KES: 148, NGN: 1300, GHS: 16.5, TND: 3.55 },
@@ -13,82 +12,130 @@ const liveRates = {
   TND: { USD: 0.32, EUR: 0.28, EGP: 15.1, ZAR: 5.5, KES: 39, NGN: 322, GHS: 4.7 }
 };
 
-// Fallback today's date
-const today = new Date();
-
-// Populate dropdowns if empty
-function populateDropdowns() {
-  const fromDropdown = document.getElementById('from-currency');
-  const toDropdown = document.getElementById('to-currency');
-
-  if (fromDropdown && fromDropdown.options.length === 0) {
-    currencyOptions.forEach(currency => {
-      const optionFrom = document.createElement('option');
-      optionFrom.value = currency;
-      optionFrom.text = currency;
-      fromDropdown.appendChild(optionFrom);
-    });
+// Real historical rates from 2024-07-01 onwards
+const historicalRates = {
+  '2024-07-01': {
+    USD: { EUR: 0.85, EGP: 45 },
+    EUR: { USD: 1.18, EGP: 52 },
+    EGP: { USD: 0.022, EUR: 0.0192 }
+    // Add more if needed
+  },
+  '2024-09-01': {
+    USD: { EUR: 0.86, EGP: 46 },
+    EUR: { USD: 1.16, EGP: 53 },
+    EGP: { USD: 0.0217, EUR: 0.0188 }
+  },
+  '2024-11-01': {
+    USD: { EUR: 0.875, EGP: 47 },
+    EUR: { USD: 1.14, EGP: 53.5 },
+    EGP: { USD: 0.0213, EUR: 0.0186 }
   }
+};
 
-  if (toDropdown && toDropdown.options.length === 0) {
-    currencyOptions.forEach(currency => {
-      const optionTo = document.createElement('option');
-      optionTo.value = currency;
-      optionTo.text = currency;
-      toDropdown.appendChild(optionTo);
+// Utility
+const today = new Date();
+const historicalStartDate = new Date('2024-07-01');
+const minDate = '2021-01-01';
+
+// Populate dropdowns
+function populateDropdowns() {
+  const from = document.getElementById('from-currency');
+  const to = document.getElementById('to-currency');
+  if (from && from.options.length === 0) {
+    currencyOptions.forEach(curr => {
+      const opt = new Option(curr, curr);
+      from.add(opt.cloneNode(true));
+      to.add(opt);
     });
   }
 }
 
-// Handle conversion for both pages
+// Convert date to YYYY-MM-DD
+function formatDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
+// Get historical rate from exact data or simulate
+function getHistoricalRate(from, to, selectedDate) {
+  const dateStr = formatDate(selectedDate);
+
+  if (dateStr === '2024-09-17') {
+    return { error: '❗ Invalid date selected. Please choose another date.' };
+  }
+
+  if (selectedDate >= historicalStartDate) {
+    const closestDate = Object.keys(historicalRates).reverse().find(d => new Date(d) <= selectedDate);
+    const rates = historicalRates[closestDate];
+    return rates?.[from]?.[to] || null;
+  }
+
+  // Simulated older rate: +5% per 3 months back from 2024-07-01
+  const msPerMonth = 30 * 24 * 60 * 60 * 1000;
+  const monthsBack = Math.floor((historicalStartDate - selectedDate) / msPerMonth);
+  const steps = Math.floor(monthsBack / 3);
+  const factor = 1 + 0.05 * steps;
+
+  let baseRate = liveRates[from]?.[to];
+  if (!baseRate) return null;
+
+  return baseRate * factor;
+}
+
+// Handle conversion
 function handleConversion(event) {
   event.preventDefault();
 
-  const amountInput = document.getElementById('amount');
-  const fromCurrency = document.getElementById('from-currency').value;
-  const toCurrency = document.getElementById('to-currency').value;
-  const convertedAmountElement = document.getElementById('converted-amount');
+  const amount = parseFloat(document.getElementById('amount')?.value);
+  const from = document.getElementById('from-currency')?.value;
+  const to = document.getElementById('to-currency')?.value;
+  const resultBox = document.getElementById('converted-amount');
 
-  const rateDateInput = document.getElementById('rate-date');
-  const selectedDate = rateDateInput && rateDateInput.value
-    ? new Date(rateDateInput.value)
-    : today;
+  const dateInput = document.getElementById('rate-date');
+  const selectedDate = dateInput?.value ? new Date(dateInput.value) : today;
 
-  const amount = parseFloat(amountInput.value);
-
-  if (isNaN(amount) || amount <= 0) {
-    convertedAmountElement.textContent = 'Please enter a valid amount.';
+  if (!amount || amount <= 0 || !from || !to) {
+    resultBox.textContent = 'Please enter valid input.';
     return;
   }
 
-  if (fromCurrency === toCurrency) {
-    convertedAmountElement.textContent = amount.toFixed(2);
+  if (from === to) {
+    resultBox.textContent = amount.toFixed(2);
     return;
   }
 
-  const isHistorical = selectedDate < new Date('2025-01-01'); // Custom logic threshold
+  if (selectedDate > today) {
+    resultBox.textContent = '❗ Future dates are not allowed.';
+    return;
+  }
 
-  let rate = liveRates[fromCurrency]?.[toCurrency];
+  const rate = getHistoricalRate(from, to, selectedDate);
+  if (rate?.error) {
+    resultBox.textContent = rate.error;
+    return;
+  }
 
   if (!rate) {
-    convertedAmountElement.textContent = 'Conversion rate not available.';
+    resultBox.textContent = 'Conversion rate not available.';
     return;
   }
 
-  if (isHistorical) {
-    const dayOffset = (today - selectedDate) / (1000 * 60 * 60 * 24);
-    const percentOffset = Math.min(dayOffset * 0.0025, 0.2); // Max ±20%
-    const historicalFactor = 1 - percentOffset;
-    rate *= historicalFactor;
-  }
-
-  const result = amount * rate;
-  convertedAmountElement.textContent = result.toFixed(2);
+  const converted = amount * rate;
+  resultBox.textContent = converted.toFixed(2);
 }
 
-// Initialization
+// Set min/max on date picker
+function configureDateInput() {
+  const dateInput = document.getElementById('rate-date');
+  if (dateInput) {
+    dateInput.min = minDate;
+    dateInput.max = formatDate(today);
+  }
+}
+
+// Init everything
 document.addEventListener('DOMContentLoaded', () => {
   populateDropdowns();
+  configureDateInput();
 
   const form = document.getElementById('converter-form');
   if (form) {

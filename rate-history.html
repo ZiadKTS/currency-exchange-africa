@@ -33,17 +33,6 @@
     <div class="history-section">
       <form id="converter-form"> <!-- Use same ID as live converter -->
         <input type="number" id="amount" placeholder="Enter Amount" required>
-        
-        <select id="from-currency" required></select>
-        <span>to</span>
-        <select id="to-currency" required></select>
-
-        <input type="date" id="rate-date" required>
-        <button type="submit">Check Rate</button>
-      </form>
-
-      <div id="conversion-result">
-        <p>Historical Conversion Result: <span id="converted-amount"></span></p>
         <select id="from-currency" required>
   <option value="USD">USD</option>
   <option value="EUR">EUR</option>
@@ -54,9 +43,8 @@
   <option value="GHS">GHS</option>
   <option value="TND">TND</option>
 </select>
-
-<span>to</span>
-
+        <span>to</span>
+        <select id="to-currency" required></select>
 <select id="to-currency" required>
   <option value="USD">USD</option>
   <option value="EUR">EUR</option>
@@ -67,6 +55,13 @@
   <option value="GHS">GHS</option>
   <option value="TND">TND</option>
 </select>
+        <input type="date" id="rate-date" required>
+        <button type="submit">Check Rate</button>
+      </form>
+
+      <div id="conversion-result">
+        <p>Historical Conversion Result: <span id="converted-amount"></span></p>
+        
       </div>
     </div>
   </section>

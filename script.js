@@ -5,11 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const dateInput = document.getElementById('rate-date');
   const resultDisplay = document.getElementById('result');
 
+  const today = new Date().toISOString().split("T")[0];
+  dateInput.max = today;
+
   const historicalRates = [
     {
-      date: '2025-04-04',
-      usd: 64,
-      eur: 72.96,
+      date: '2025-04-04', usd: 64, eur: 72.96,
       ngn_usd: 414.3, ngn_eur: 476.2, ngn_egp: 4.11,
       zar_usd: 16.3,  zar_eur: 17.2,  zar_egp: 4.55,
       kes_usd: 145.9, kes_eur: 153.8, kes_egp: 4.35,
@@ -17,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tnd_usd: 3.1,   tnd_eur: 3.4,   tnd_egp: 5.26,
     },
     {
-      date: '2025-03-15',
-      usd: 63.5,
-      eur: 72.39,
+      date: '2025-03-15', usd: 63.5, eur: 72.39,
       ngn_usd: 413, ngn_eur: 474, ngn_egp: 4.09,
       zar_usd: 16.2, zar_eur: 17.1, zar_egp: 4.52,
       kes_usd: 145.5, kes_eur: 153.4, kes_egp: 4.31,
@@ -27,9 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tnd_usd: 3.08, tnd_eur: 3.38, tnd_egp: 5.22,
     },
     {
-      date: '2025-02-10',
-      usd: 60,
-      eur: 68.4,
+      date: '2025-02-10', usd: 60, eur: 68.4,
       ngn_usd: 410, ngn_eur: 470, ngn_egp: 4.05,
       zar_usd: 16, zar_eur: 16.9, zar_egp: 4.5,
       kes_usd: 145, kes_eur: 153, kes_egp: 4.25,
@@ -37,16 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
       tnd_usd: 3, tnd_eur: 3.3, tnd_egp: 5.2,
     },
     {
-      date: '2024-07-01',
-      usd: 57,
-      eur: 64.98,
+      date: '2024-07-01', usd: 57, eur: 64.98,
       ngn_usd: 410, ngn_eur: 470, ngn_egp: 4.05,
       zar_usd: 16, zar_eur: 16.9, zar_egp: 4.5,
       kes_usd: 145, kes_eur: 153, kes_egp: 4.25,
       ghs_usd: 5.7, ghs_eur: 6.1, ghs_egp: 5.8,
       tnd_usd: 3, tnd_eur: 3.3, tnd_egp: 5.2,
     },
-    // Simulated historical USD & EUR rates only
     { date: '2024-04-01', usd: 59.85, eur: 68.23 },
     { date: '2024-01-01', usd: 62.84, eur: 71.64 },
     { date: '2023-10-01', usd: 65.99, eur: 75.22 },
@@ -63,9 +57,20 @@ document.addEventListener('DOMContentLoaded', () => {
     { date: '2021-01-01', usd: 112.86, eur: 128.65 }
   ];
 
+  const baseReferenceDate = new Date('2024-07-01');
+  const baseReference = historicalRates.find(r => r.date === '2024-07-01');
+
+  function getSimulatedRate(currency) {
+    return baseReference[currency.toLowerCase()] || null;
+  }
+
   function getRateByDate(targetDate) {
-    if (targetDate === '2024-17-09') {
-      return { error: 'Invalid date entered. Please choose a correct date.' };
+    if (targetDate === '2024-09-17') {
+      return { error: 'Invalid date selected. Please choose another date.' };
+    }
+
+    if (new Date(targetDate) > new Date()) {
+      return { error: 'Future dates are not allowed.' };
     }
 
     const sorted = [...historicalRates].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -74,6 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return rate;
       }
     }
+
+    // Simulate rate if date < 2022-07-01
+    const minActual = new Date('2022-07-01');
+    if (new Date(targetDate) < minActual) {
+      const monthsDiff = Math.floor((baseReferenceDate - new Date(targetDate)) / (1000 * 60 * 60 * 24 * 30));
+      const steps = Math.floor(monthsDiff / 3); // every 3 months = +5%
+      const multiplier = Math.pow(1.05, steps);
+      return {
+        usd: (baseReference.usd * multiplier),
+        eur: (baseReference.eur * multiplier)
+      };
+    }
+
     return { error: 'No historical data available for selected date.' };
   }
 
@@ -94,13 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const liveRates = {
-      USD: 64,
-      EUR: 72.96,
-      EGP: 1,
-    };
-
-    // Special EGP logic
+    // Special EGP logic for pre-2023
     if (to === 'EGP') {
       if (from === 'USD' && selectedDate < '2023-01-01') {
         return resultDisplay.textContent = `1 USD = 16 EGP (Fixed Pre-2023 Rate) → ${amount * 16} EGP`;

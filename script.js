@@ -31,6 +31,8 @@ const liveRates = {
     'EGP-USD': 1 / 64,
     'EGP-EUR': 1 / 72.96,
     'USD-EGP': 64,
+    'EUR-USD': 1.14,
+    'USD-EUR': 0.8772,
     'EUR-EGP': 72.96,
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,

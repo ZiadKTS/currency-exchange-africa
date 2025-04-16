@@ -1,114 +1,108 @@
-function handleConversion() {
-  const amount = parseFloat(document.getElementById("amount").value);
-  const fromCurrency = document.getElementById("fromCurrency").value;
-  const toCurrency = document.getElementById("toCurrency").value;
-  const date = document.getElementById("date")?.value || new Date().toISOString().split("T")[0];
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("converter-form");
+  const amountInput = document.getElementById("amount");
+  const fromCurrencySelect = document.getElementById("from-currency");
+  const toCurrencySelect = document.getElementById("to-currency");
+  const resultDisplay = document.getElementById("result");
+  const dateInput = document.getElementById("rate-date"); // Only exists in Rate History
 
-  if (!amount || isNaN(amount)) {
-    document.getElementById("result").innerText = "Please enter a valid amount.";
+  if (!form || !amountInput || !fromCurrencySelect || !toCurrencySelect || !resultDisplay) {
+    console.error("Some required elements are missing in the HTML.");
     return;
   }
 
-  if (date === "2024-09-17") {
-    document.getElementById("result").innerText = "Invalid Date";
-    return;
-  }
+  form.addEventListener("submit", function (event) {
+    event.preventDefault(); // Stop form from refreshing the page
 
-  const fixedRates = [
-    {
-      date: "2024-07-01",
-      usd: 57,
-      eur: 64.98,
-      ngn_usd: 410, ngn_eur: 470, ngn_egp: 4.05,
-      zar_usd: 16, zar_eur: 16.9, zar_egp: 4.5,
-      kes_usd: 145, kes_eur: 153, kes_egp: 4.25,
-      ghs_usd: 5.7, ghs_eur: 6.1, ghs_egp: 5.8,
-      tnd_usd: 3, tnd_eur: 3.3, tnd_egp: 5.2,
-    },
-    {
-      date: "2025-02-10",
-      usd: 60,
-      eur: 68.4,
-      ngn_usd: 410, ngn_eur: 470, ngn_egp: 4.05,
-      zar_usd: 16, zar_eur: 16.9, zar_egp: 4.5,
-      kes_usd: 145, kes_eur: 153, kes_egp: 4.25,
-      ghs_usd: 5.7, ghs_eur: 6.1, ghs_egp: 5.8,
-      tnd_usd: 3, tnd_eur: 3.3, tnd_egp: 5.2,
-    },
-    {
-      date: "2025-03-15",
-      usd: 63.5,
-      eur: 72.39,
-      ngn_usd: 413, ngn_eur: 474, ngn_egp: 4.09,
-      zar_usd: 16.2, zar_eur: 17.1, zar_egp: 4.52,
-      kes_usd: 145.5, kes_eur: 153.4, kes_egp: 4.31,
-      ghs_usd: 5.8, ghs_eur: 6.2, ghs_egp: 5.85,
-      tnd_usd: 3.08, tnd_eur: 3.38, tnd_egp: 5.22,
-    },
-    {
-      date: "2025-04-04",
-      usd: 64,
-      eur: 72.96,
-      ngn_usd: 414.3, ngn_eur: 476.2, ngn_egp: 4.11,
-      zar_usd: 16.3, zar_eur: 17.2, zar_egp: 4.55,
-      kes_usd: 145.9, kes_eur: 153.8, kes_egp: 4.35,
-      ghs_usd: 5.9, ghs_eur: 6.3, ghs_egp: 5.89,
-      tnd_usd: 3.1, tnd_eur: 3.4, tnd_egp: 5.26,
-    },
-  ];
+    const amount = parseFloat(amountInput.value);
+    const fromCurrency = fromCurrencySelect.value;
+    const toCurrency = toCurrencySelect.value;
+    const selectedDate = dateInput ? dateInput.value : null; // Only if date input exists
 
-  const d = new Date(date);
-  let selectedRates;
-
-  if (d >= new Date("2025-04-04")) {
-    selectedRates = fixedRates[3];
-  } else if (d >= new Date("2025-03-15")) {
-    selectedRates = fixedRates[2];
-  } else if (d >= new Date("2024-07-01")) {
-    selectedRates = fixedRates[1];
-  } else {
-    // Simulate older rates
-    const baseDate = new Date("2024-07-01");
-    const steps = Math.floor((baseDate - d) / (30 * 24 * 60 * 60 * 1000));
-    const multiplier = Math.max(0.3, 1 - steps * 0.05);
-    selectedRates = {
-      usd: parseFloat((57 * multiplier).toFixed(2)),
-      eur: parseFloat((64.98 * multiplier).toFixed(2)),
-    };
-  }
-
-  let rate = 1;
-
-  if (fromCurrency === toCurrency) {
-    rate = 1;
-  } else if (fromCurrency === "USD") {
-    rate = 1 / selectedRates[toCurrency.toLowerCase()];
-  } else if (toCurrency === "USD") {
-    rate = selectedRates[fromCurrency.toLowerCase()];
-  } else {
-    const pairKey = `${fromCurrency.toLowerCase()}_${toCurrency.toLowerCase()}`;
-    const inversePairKey = `${toCurrency.toLowerCase()}_${fromCurrency.toLowerCase()}`;
-
-    if (selectedRates[pairKey]) {
-      rate = selectedRates[pairKey];
-    } else if (selectedRates[inversePairKey]) {
-      rate = 1 / selectedRates[inversePairKey];
-    } else {
-      document.getElementById("result").innerText = `Conversion not supported for ${fromCurrency} to ${toCurrency}`;
+    if (isNaN(amount) || amount <= 0) {
+      resultDisplay.textContent = "Please enter a valid amount.";
       return;
     }
+
+    // Simulated historical rate logic
+    const today = new Date().toISOString().split("T")[0];
+
+    let rate;
+    if (!selectedDate || selectedDate === today) {
+      // Live rate logic
+      rate = getLiveRate(fromCurrency, toCurrency);
+    } else {
+      try {
+        rate = getHistoricalRate(fromCurrency, toCurrency, selectedDate);
+      } catch (error) {
+        resultDisplay.textContent = error.message;
+        return;
+      }
+    }
+
+    const converted = (amount * rate).toFixed(2);
+    resultDisplay.textContent = `${converted} ${toCurrency}`;
+  });
+});
+
+// Dummy live exchange rates (for demo purposes)
+function getLiveRate(from, to) {
+  const baseRates = {
+    USD: 1,
+    EUR: 0.88,
+    EGP: 47.25,
+    ZAR: 18.2,
+    KES: 131.6,
+    NGN: 1402,
+    GHS: 13.7,
+    TND: 3.1,
+  };
+
+  if (!baseRates[from] || !baseRates[to]) {
+    return 1;
   }
 
-  const result = amount * rate;
-  document.getElementById("result").innerText = `${amount} ${fromCurrency} = ${result.toFixed(2)} ${toCurrency}`;
+  return baseRates[to] / baseRates[from];
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("converter-form");
-  if (form) {
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      handleConversion();
-    });
+// Simulated historical rate logic
+function getHistoricalRate(from, to, date) {
+  if (date === "2024-09-07") {
+    throw new Error("Invalid Date: No rates available on 2024-09-07.");
   }
-});
+
+  const fixedRates = {
+    "2025-04-16": {
+      USD: 1, EUR: 0.88, EGP: 47.25, ZAR: 18.2, KES: 131.6, NGN: 1402, GHS: 13.7, TND: 3.1
+    },
+    "2025-04-10": {
+      USD: 1, EUR: 0.87, EGP: 47.1, ZAR: 18.1, KES: 132.5, NGN: 1398, GHS: 13.5, TND: 3.05
+    },
+    "2025-04-04": {
+      USD: 1, EUR: 0.86, EGP: 46.9, ZAR: 18.0, KES: 133.4, NGN: 1395, GHS: 13.3, TND: 3.02
+    },
+    "2024-07-01": {
+      USD: 1, EUR: 0.84, EGP: 44.0, ZAR: 17.0, KES: 138.0, NGN: 1350, GHS: 12.0, TND: 2.95
+    },
+  };
+
+  if (fixedRates[date]) {
+    return fixedRates[date][to] / fixedRates[date][from];
+  }
+
+  const baseDate = new Date("2024-07-01");
+  const targetDate = new Date(date);
+  if (targetDate < baseDate) {
+    const msPerMonth = 30 * 24 * 60 * 60 * 1000;
+    const monthsBack = Math.floor((baseDate - targetDate) / msPerMonth);
+    const multiplier = Math.max(0.3, 1 - monthsBack * 0.05);
+
+    const reference = fixedRates["2024-07-01"];
+    const fromRate = reference[from] * multiplier;
+    const toRate = reference[to] * multiplier;
+    return toRate / fromRate;
+  }
+
+  // If date is in the future or unknown
+  throw new Error("No rate data available for the selected date.");
+}

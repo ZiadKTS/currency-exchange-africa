@@ -130,7 +130,7 @@ function handleConversion(from, to, amount, selectedDate = null) {
         if (!historical) {
             alert("No historical data available for this date. Showing live rates instead.");
             // If no historical data, use live rates
-            const key = ${from}-${to};
+            const key = `${from}-${to}`;
             rate = liveRates[key] || 1;
         } else {
             // Conversion logic for historical rates
@@ -142,7 +142,7 @@ function handleConversion(from, to, amount, selectedDate = null) {
         }
     } else {
         // If no date is selected, use live rates
-        const key = ${from}-${to};
+        const key = `${from}-${to}`;
         rate = liveRates[key] || 1;
     }
 

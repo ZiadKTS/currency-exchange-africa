@@ -1,23 +1,37 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const convertBtn = document.getElementById('convert-btn');
   const amountInput = document.getElementById('amount');
   const resultDiv = document.getElementById('result');
   const fromCurrency = document.getElementById('from-currency');
   const toCurrency = document.getElementById('to-currency');
   const dateInput = document.getElementById('conversion-date');
+  const convertBtn = document.getElementById('convert-btn');
+  const form = document.getElementById('converter-form');
 
-  if (!convertBtn || !amountInput || !resultDiv || !fromCurrency || !toCurrency || !dateInput) {
-    console.error('One or more DOM elements not found. Please check your HTML IDs.');
+  // Make sure core elements are found
+  if (!amountInput || !resultDiv || !fromCurrency || !toCurrency || !form) {
+    console.error('Missing essential DOM elements.');
     return;
   }
 
-  convertBtn.addEventListener('click', handleConversion);
+  // Add form submit handler (works for both pages)
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    handleConversion();
+  });
+
+  // Optional: also support separate Convert button if present
+  if (convertBtn) {
+    convertBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      handleConversion();
+    });
+  }
 
   function handleConversion() {
     const amount = parseFloat(amountInput.value);
     const from = fromCurrency.value;
     const to = toCurrency.value;
-    const dateStr = dateInput.value;
+    const dateStr = dateInput ? dateInput.value : getTodayString();
 
     console.log('Inputs:', { amount, from, to, dateStr });
 
@@ -34,9 +48,6 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
       const rateSet = buildRateSetFromHistorical(dateStr);
       const key = `${from}-${to}`;
-
-      console.log('Rate set:', rateSet);
-      console.log('Using key:', key);
 
       if (rateSet[key]) {
         const result = amount * rateSet[key];
@@ -69,14 +80,14 @@ document.addEventListener('DOMContentLoaded', function () {
         baseRates['EGP-USD'] = 1 / egpRates.egp_usd;
       }
 
-      if (egpRates.egp_eur || (egpRates.egp_usd && !egpRates.egp_eur)) {
-        let eur;
-        if (egpRates.egp_eur) {
-          eur = egpRates.egp_eur;
-        } else if (egpRates.egp_usd) {
-          eur = egpRates.egp_usd / 0.88;
-        }
+      let eur;
+      if (egpRates.egp_eur) {
+        eur = egpRates.egp_eur;
+      } else if (egpRates.egp_usd) {
+        eur = egpRates.egp_usd / 0.88;
+      }
 
+      if (eur) {
         baseRates['EGP-EUR'] = eur;
         baseRates['EUR-EGP'] = 1 / eur;
       }
@@ -115,11 +126,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const d3 = new Date('2025-04-04');
 
     if (date < dStartFixed) {
-      return null; // Handled by simulated logic
+      return null;
     } else if (date >= dStartFixed && date < d1) {
       return { egp_usd: 57, egp_eur: 64.98 };
     } else if (date >= d1 && date < d2) {
-      return { egp_usd: 60 }; // EUR will be derived
+      return { egp_usd: 60 };
     } else if (date.toISOString().slice(0, 10) === '2025-03-14') {
       return { egp_usd: 63.5, egp_eur: 72.39 };
     } else if (date >= d3) {
@@ -128,13 +139,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     return null;
   }
-});
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("converter-form");
-  if (form) {
-    form.addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent page reload
-      handleConversion(); // Call the existing conversion logic
-    });
+
+  function getTodayString() {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
   }
 });

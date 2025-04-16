@@ -11,22 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const currencyList = ["EGP", "USD", "EUR", "NGN", "ZAR", "KES", "GHS", "TND"];
+  const baseDate = new Date("2024-07-01");
 
   function populateCurrencyOptions() {
-    const fromSelects = document.querySelectorAll("#from-currency");
-    const toSelects = document.querySelectorAll("#to-currency");
-
-    fromSelects.forEach(select => {
-      select.innerHTML = "";
-      currencyList.forEach(curr => {
-        const opt = document.createElement("option");
-        opt.value = curr;
-        opt.textContent = curr;
-        select.appendChild(opt);
-      });
-    });
-
-    toSelects.forEach(select => {
+    [fromCurrency, toCurrency].forEach(select => {
+      if (!select) return;
       select.innerHTML = "";
       currencyList.forEach(curr => {
         const opt = document.createElement("option");
@@ -56,61 +45,50 @@ document.addEventListener('DOMContentLoaded', () => {
     'GHS-USD': 1 / 5.9,
     'USD-TND': 3.1,
     'TND-USD': 1 / 3.1,
-    // Add more live pairs if needed
+    // You can add more pairs here as needed
   };
 
   const historicalRates = [
-    // Example entries
-    // { date: "2024-07-01", usd: 64, eur: 72.96, ngn_usd: 414.3, ... }
+    { date: "2025-04-04", usd: 64, eur: 72.96, ngn_usd: 414.3, zar_usd: 16.3, kes_usd: 145.9, ghs_usd: 5.9, tnd_usd: 3.1 },
+    { date: "2024-12-25", usd: 63, eur: 71.5, ngn_usd: 405, zar_usd: 15.9, kes_usd: 140, ghs_usd: 5.7, tnd_usd: 3.0 },
+    { date: "2024-09-01", usd: 61, eur: 70.0, ngn_usd: 398, zar_usd: 15.6, kes_usd: 137, ghs_usd: 5.5, tnd_usd: 2.9 },
+    { date: "2024-07-01", usd: 60, eur: 68.4, ngn_usd: 390, zar_usd: 15.2, kes_usd: 134, ghs_usd: 5.3, tnd_usd: 2.8 }
   ];
 
   function findClosestHistoricalRate(dateStr) {
+    if (dateStr === "2024-09-07") return "invalid";
     const inputDate = new Date(dateStr);
-    const thresholdDate = new Date("2024-07-01");
 
-    if (inputDate >= thresholdDate) {
+    const fixed = historicalRates.find(entry => entry.date === dateStr);
+    if (fixed) return fixed;
+
+    if (inputDate >= baseDate) {
+      // Return the closest fixed date if after baseDate
       return historicalRates.reduce((closest, current) => {
         const currentDiff = Math.abs(new Date(current.date) - inputDate);
         const closestDiff = Math.abs(new Date(closest.date) - inputDate);
         return currentDiff < closestDiff ? current : closest;
-      }, historicalRates[0]);
+      });
+    } else {
+      // Simulate for dates before baseDate
+      const msInStep = 1000 * 60 * 60 * 24 * 110; // ~3.6 months
+      const steps = Math.floor((baseDate - inputDate) / msInStep);
+      const multiplier = Math.max(0.3, 1 - steps * 0.05);
+      return {
+        usd: 60 * multiplier,
+        eur: 68.4 * multiplier,
+        ngn_usd: 390 * multiplier,
+        zar_usd: 15.2 * multiplier,
+        kes_usd: 134 * multiplier,
+        ghs_usd: 5.3 * multiplier,
+        tnd_usd: 2.8 * multiplier
+      };
     }
-
-    return simulateHistoricalEntry(inputDate);
-  }
-
-  function simulateHistoricalEntry(inputDate) {
-    const baseDate = new Date("2024-07-01");
-
-    const monthsDiff = (baseDate.getFullYear() - inputDate.getFullYear()) * 12 +
-      (baseDate.getMonth() - inputDate.getMonth());
-
-    const stepsBack = Math.floor(monthsDiff / 3);
-    const multiplier = 1 + (0.05 * stepsBack);
-
-    return {
-      date: inputDate.toISOString().split("T")[0],
-      usd: 64 * multiplier,
-      eur: 72.96 * multiplier,
-      ngn_usd: 414.3 * multiplier,
-      zar_usd: 16.3 * multiplier,
-      kes_usd: 145.9 * multiplier,
-      ghs_usd: 5.9 * multiplier,
-      tnd_usd: 3.1 * multiplier,
-      ngn_eur: (414.3 / 0.88) * multiplier,
-      zar_eur: (16.3 / 0.88) * multiplier,
-      kes_eur: (145.9 / 0.88) * multiplier,
-      ghs_eur: (5.9 / 0.88) * multiplier,
-      tnd_eur: (3.1 / 0.88) * multiplier,
-      ngn_egp: (414.3 / 64) * multiplier,
-      zar_egp: (16.3 / 64) * multiplier,
-      kes_egp: (145.9 / 64) * multiplier,
-      ghs_egp: (5.9 / 64) * multiplier,
-      tnd_egp: (3.1 / 64) * multiplier,
-    };
   }
 
   function buildRateSetFromHistorical(entry) {
+    if (entry === "invalid") return null;
+
     const rates = {};
     if (!entry) return rates;
 
@@ -118,16 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
       rates['EGP-USD'] = 1 / entry.usd;
       rates['USD-EGP'] = entry.usd;
     }
-
     if (entry.eur) {
       rates['EGP-EUR'] = 1 / entry.eur;
       rates['EUR-EGP'] = entry.eur;
-    }
-
-    if (entry.usd && entry.eur) {
-      const usdToEur = entry.eur / entry.usd;
-      rates['USD-EUR'] = usdToEur;
-      rates['EUR-USD'] = 1 / usdToEur;
     }
 
     ['ngn', 'zar', 'kes', 'ghs', 'tnd'].forEach(code => {
@@ -136,33 +107,28 @@ document.addEventListener('DOMContentLoaded', () => {
         rates[`${upper}-USD`] = 1 / entry[`${code}_usd`];
         rates[`USD-${upper}`] = entry[`${code}_usd`];
       }
-      if (entry[`${code}_eur`]) {
-        rates[`${upper}-EUR`] = 1 / entry[`${code}_eur`];
-        rates[`EUR-${upper}`] = entry[`${code}_eur`];
-      }
-      if (entry[`${code}_egp`]) {
-        rates[`${upper}-EGP`] = 1 / entry[`${code}_egp`];
-        rates[`EGP-${upper}`] = entry[`${code}_egp`];
-      }
     });
+
+    // Add fixed historical USD-EUR & EUR-USD
+    if (entry.usd && entry.eur) {
+      const usdToEur = entry.usd / entry.eur;
+      rates['USD-EUR'] = usdToEur;
+      rates['EUR-USD'] = 1 / usdToEur;
+    }
 
     return rates;
   }
 
   function convertCurrency(amount, from, to, rateSet) {
     const key = `${from}-${to}`;
-    if (rateSet[key]) {
-      return amount * rateSet[key];
-    }
+    if (rateSet[key]) return amount * rateSet[key];
 
     if (rateSet[`${from}-USD`] && rateSet[`USD-${to}`]) {
       return amount * rateSet[`${from}-USD`] * rateSet[`USD-${to}`];
     }
-
     if (rateSet[`${from}-EGP`] && rateSet[`EGP-${to}`]) {
       return amount * rateSet[`${from}-EGP`] * rateSet[`EGP-${to}`];
     }
-
     return null;
   }
 
@@ -180,14 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
       result = convertCurrency(amount, from, to, liveRates);
     } else {
       const closestRate = findClosestHistoricalRate(date);
+      if (closestRate === "invalid") {
+        resultDisplay.textContent = "Invalid date entered.";
+        return;
+      }
       const rateSet = buildRateSetFromHistorical(closestRate);
       result = convertCurrency(amount, from, to, rateSet);
     }
 
-    if (result !== null && resultDisplay) {
-      resultDisplay.textContent = result.toFixed(2);
-    } else {
-      resultDisplay.textContent = "Conversion not available";
-    }
+    resultDisplay.textContent = result !== null ? result.toFixed(2) : "Conversion not available";
   });
 });

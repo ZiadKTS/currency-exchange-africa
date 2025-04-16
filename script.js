@@ -16,7 +16,6 @@ function handleConversion() {
     return;
   }
 
-  const inputDate = new Date(date);
   const fixedRates = [
     {
       date: "2024-07-01",
@@ -60,54 +59,64 @@ function handleConversion() {
     },
   ];
 
-  let selectedRates;
   const d = new Date(date);
+  let selectedRates = {};
 
   if (d >= new Date("2025-04-04")) {
     selectedRates = fixedRates[3];
-  } else if (d.toISOString().split("T")[0] === "2025-03-14") {
-    selectedRates = fixedRates[2];
-    selectedRates.usd = 63.5;
-    selectedRates.eur = 72.39;
+  } else if (date === "2025-03-14") {
+    selectedRates = { ...fixedRates[2] };
   } else if (d > new Date("2024-08-10") && d < new Date("2025-03-14")) {
     selectedRates = fixedRates[1];
-  } else if (d < new Date("2024-12-10")) {
+  } else if (d >= new Date("2024-07-01") && d <= new Date("2024-08-10")) {
     selectedRates = fixedRates[0];
   } else {
-    // Use simulated rate for earlier historical dates
+    // Simulate rates for earlier dates
     const baseDate = new Date("2024-07-01");
-    const steps = Math.floor((baseDate - d) / (30 * 24 * 60 * 60 * 1000));
+    const steps = Math.floor((baseDate - d) / (30 * 24 * 60 * 60 * 1000)); // months approx
     const multiplier = Math.max(0.3, 1 - steps * 0.05);
-    selectedRates = {
-      usd: parseFloat((57 * multiplier).toFixed(2)),
-      eur: parseFloat((64.98 * multiplier).toFixed(2)),
-    };
+    selectedRates.usd = parseFloat((57 * multiplier).toFixed(2));
+    selectedRates.eur = parseFloat((64.98 * multiplier).toFixed(2));
+    selectedRates.ngn_usd = 400 * multiplier;
+    selectedRates.zar_usd = 15 * multiplier;
+    selectedRates.kes_usd = 140 * multiplier;
+    selectedRates.ghs_usd = 5.5 * multiplier;
+    selectedRates.tnd_usd = 2.8 * multiplier;
   }
 
+  // Determine conversion rate
   let rate = 1;
   if (fromCurrency === toCurrency) {
     rate = 1;
   } else if (fromCurrency === "USD") {
-    rate = 1 / selectedRates[toCurrency.toLowerCase()];
+    const key = `${toCurrency.toLowerCase()}`;
+    rate = selectedRates[key] ? 1 / selectedRates[key] : null;
   } else if (toCurrency === "USD") {
-    rate = selectedRates[fromCurrency.toLowerCase()];
+    const key = `${fromCurrency.toLowerCase()}`;
+    rate = selectedRates[key] ?? null;
   } else {
-    rate = selectedRates[fromCurrency.toLowerCase()] / selectedRates[toCurrency.toLowerCase()];
+    const key1 = `${fromCurrency.toLowerCase()}_usd`;
+    const key2 = `${toCurrency.toLowerCase()}_usd`;
+    if (selectedRates[key1] && selectedRates[key2]) {
+      rate = selectedRates[key1] / selectedRates[key2];
+    } else {
+      rate = null;
+    }
+  }
+
+  if (rate === null || isNaN(rate)) {
+    document.getElementById("result").innerText = "Conversion rate not available.";
+    return;
   }
 
   const result = amount * rate;
   document.getElementById("result").innerText = `${amount} ${fromCurrency} = ${result.toFixed(2)} ${toCurrency}`;
 }
 
-// Optional: keep if used elsewhere
 function getTodayString() {
   const today = new Date();
   return today.toISOString().split('T')[0];
 }
- const multiplier = Math.max(0.3, 1 - monthsDiff * 0.05);
-    return parseFloat((64 * multiplier).toFixed(2));
-  }
-});
 
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("converter-form");
@@ -117,3 +126,4 @@ document.addEventListener("DOMContentLoaded", function () {
       handleConversion();
     });
   }
+});

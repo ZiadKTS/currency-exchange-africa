@@ -104,3 +104,16 @@ function getTodayString() {
   const today = new Date();
   return today.toISOString().split('T')[0];
 }
+ const multiplier = Math.max(0.3, 1 - monthsDiff * 0.05);
+    return parseFloat((64 * multiplier).toFixed(2));
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("converter-form");
+  if (form) {
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      handleConversion();
+    });
+  }

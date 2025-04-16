@@ -129,3 +129,12 @@ document.addEventListener('DOMContentLoaded', function () {
     return null;
   }
 });
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("converter-form");
+  if (form) {
+    form.addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent page reload
+      handleConversion(); // Call the existing conversion logic
+    });
+  }
+});

@@ -55,22 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getSpecialEGPRates(dateStr) {
     const date = new Date(dateStr);
-    const jul10 = new Date('2024-07-10');
-    const dec10 = new Date('2024-12-10');
-    const apr8 = new Date('2025-04-08');
+    const d1 = new Date('2024-08-10');
+    const d2 = new Date('2024-12-10');
+    const d3 = new Date('2025-03-14');
+    const d4 = new Date('2025-04-04');
 
-    if (date >= jul10 && date < dec10) {
-      return { usd: 57, eur: 64.98 };
-    } else if (date >= dec10 && date < apr8) {
-      return { 
-        usd: 63.5, eur: 71.5,
-        ngn_usd: 405, zar_usd: 15.9, kes_usd: 140, ghs_usd: 5.7, tnd_usd: 3.0
-      };
-    } else if (date >= apr8) {
-      return { 
-        usd: 64, eur: 72.96,
-        ngn_usd: 414.3, zar_usd: 16.3, kes_usd: 145.9, ghs_usd: 5.9, tnd_usd: 3.1
-      };
+    if (date < d2) {
+      return { egp_usd: 57, egp_eur: 64.98 };
+    } else if (date >= d2 && date < d3) {
+      return { egp_usd: 63, egp_eur: 71.82 };
+    } else if (date.toISOString().slice(0, 10) === '2025-03-14') {
+      return { egp_usd: 63.5, egp_eur: 72.39 };
+    } else if (date >= d4) {
+      return { egp_usd: 64, egp_eur: 72.96 };
     }
 
     return null;
@@ -118,13 +115,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const rates = {};
     if (!entry) return rates;
 
-    if (entry.usd) {
-      rates['EGP-USD'] = 1 / entry.usd;
-      rates['USD-EGP'] = entry.usd;
+    if (entry.usd || entry.egp_usd) {
+      const usd = entry.usd || entry.egp_usd;
+      rates['EGP-USD'] = 1 / usd;
+      rates['USD-EGP'] = usd;
     }
-    if (entry.eur) {
-      rates['EGP-EUR'] = 1 / entry.eur;
-      rates['EUR-EGP'] = entry.eur;
+    if (entry.eur || entry.egp_eur) {
+      const eur = entry.eur || entry.egp_eur;
+      rates['EGP-EUR'] = 1 / eur;
+      rates['EUR-EGP'] = eur;
     }
 
     ['ngn', 'zar', 'kes', 'ghs', 'tnd'].forEach(code => {
@@ -135,8 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    if (entry.usd && entry.eur) {
-      const usdToEur = entry.usd / entry.eur;
+    if ((entry.usd || entry.egp_usd) && (entry.eur || entry.egp_eur)) {
+      const usd = entry.usd || entry.egp_usd;
+      const eur = entry.eur || entry.egp_eur;
+      const usdToEur = usd / eur;
       rates['USD-EUR'] = usdToEur;
       rates['EUR-USD'] = 1 / usdToEur;
     }

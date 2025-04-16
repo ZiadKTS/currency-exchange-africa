@@ -1,82 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rate History | CurrencyExchange.Africa</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="responsive.css" />
-</head>
+// Supported currencies 
+const currencyList = ["EGP", "USD", "EUR", "NGN", "ZAR", "KES", "GHS", "TND"];
 
-<body>
-  <!-- Header -->
-  <header>
-    <nav class="navbar">
-      <img src="CEA-logo.png" alt="Company Logo" class="logo">
-      <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="live-converter.html">Live Converter</a></li>
-        <li><a href="rate-history.html">Rate History</a></li>
-        <li><a href="about-us.html">About Us</a></li>
-        <li><a href="contact-us.html">Contact Us</a></li>
-      </ul>
-    </nav>
-  </header>
+// Populate currency dropdowns
+function populateCurrencyOptions() {
+    const fromSelects = document.querySelectorAll("#from-currency");
+    const toSelects = document.querySelectorAll("#to-currency");
 
-  <!-- Rate History Section -->
-  <div class="rate-history-heading">
-    <h1>Currency Rate History & Trends</h1>
-    <p>See how exchange rates have changed over time for smarter financial planning.</p>
-  </div>
+    fromSelects.forEach((fromSelect) => {
+        currencyList.forEach(currency => {
+            const fromOption = document.createElement("option");
+            fromOption.value = currency;
+            fromOption.innerText = currency;
+            fromSelect.appendChild(fromOption);
+        });
+    });
 
-  <section class="rate-history">
-    <div class="history-section">
-      <form id="converter-form">
-        <input type="number" id="amount" placeholder="Enter Amount" required>
-        <select id="from-currency" required>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="EGP">EGP</option>
-          <option value="ZAR">ZAR</option>
-          <option value="KES">KES</option>
-          <option value="NGN">NGN</option>
-          <option value="GHS">GHS</option>
-          <option value="TND">TND</option>
-        </select>
-        <span>to</span>
-        <select id="to-currency" required>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="EGP">EGP</option>
-          <option value="ZAR">ZAR</option>
-          <option value="KES">KES</option>
-          <option value="NGN">NGN</option>
-          <option value="GHS">GHS</option>
-          <option value="TND">TND</option>
-        </select>
-        <input type="date" id="rate-date" required>
-        <button type="submit">Check Rate</button>
-      </form>
+    toSelects.forEach((toSelect) => {
+        currencyList.forEach(currency => {
+            const toOption = document.createElement("option");
+            toOption.value = currency;
+            toOption.innerText = currency;
+            toSelect.appendChild(toOption);
+        });
+    });
+}
 
-      <div id="conversion-result">
-        <p>Historical Conversion Result: <span id="result"></span></p>
-      </div>
-    </div>
-  </section>
+// Live Rates
+const liveRates = {
+    'EGP-USD': 1 / 64,
+    'EGP-EUR': 1 / 72.96,
+    'USD-EGP': 64,
+    'EUR-EGP': 72.96,
+    'NGN-USD': 0.0024,
+    'ZAR-USD': 0.062,
+    'KES-USD': 0.0069,
+    'GHS-USD': 0.17,
+    'TND-USD': 0.32,
+    'USD-NGN': 414.3,
+    'USD-ZAR': 16.3,
+    'USD-KES': 145.9,
+    'USD-GHS': 5.9,
+    'USD-TND': 3.1,
+    'NGN-EGP': 0.243,
+    'ZAR-EGP': 0.22,
+    'KES-EGP': 0.23,
+    'GHS-EGP': 0.17,
+    'TND-EGP': 0.19
+};
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 CurrencyExchange.Africa. All Rights Reserved.</p>
-    <ul class="footer-links">
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="live-converter.html">Live Converter</a></li>
-      <li><a href="rate-history.html">Rate History</a></li>
-      <li><a href="about-us.html">About Us</a></li>
-      <li><a href="contact-us.html">Contact Us</a></li>
-    </ul>
-  </footer>
+// Get historical rates based on the selected date
+function getRateByDate(dateStr) {
+    if (!dateStr || dateStr === "2024-09-07") return null;
 
-  <!-- JavaScript -->
-  <script src="script.js"></script>
-</body>
-</html>
+    const date = new Date(dateStr);
+
+    const dec10 = new Date("2024-12-10");
+    const dec11 = new Date("2024-12-11");
+    const mar14 = new Date("2025-03-14");
+    const mar15 = new Date("2025-03-15");
+    const apr03 = new Date("2025-04-03");
+    const apr04 = new Date("2025-04-04");
+
+    if (date < dec10) {
+        return { usd: 57, eur: 64.98 };
+    } else if (date >= dec11 && date <= mar14) {
+        return { usd: 63, eur: 71.82 };
+    } else if (date >= mar15 && date <= apr03) {
+        return { usd: 63.5, eur: 72.39 };
+    } else if (date >= apr04) {
+        return { usd: 64, eur: 72.96 };
+    }
+
+    return null;
+}
+
+// Conversion logic
+function handleConversion(from, to, amount, selectedDate = null) {
+    let rate = 1;
+
+    if (selectedDate) {
+        if (selectedDate === "2024-09-07") return 0;
+        const historical = getRateByDate(selectedDate);
+        if (!historical) return 0;
+
+        if (from === 'EGP' && to === 'USD') rate = 1 / historical.usd;
+        else if (from === 'EGP' && to === 'EUR') rate = 1 / historical.eur;
+        else if (from === 'USD' && to === 'EGP') rate = historical.usd;
+        else if (from === 'EUR' && to === 'EGP') rate = historical.eur;
+        else if (from === to) rate = 1;
+        else return 0; // Unsupported historical pair
+    } else {
+        const key = `${from}-${to}`;
+        rate = liveRates[key] || 0;
+    }
+
+    return +(amount * rate).toFixed(4);
+}
+
+// Main conversion handler
+function setupConversionForm() {
+    const form = document.getElementById("converter-form");
+    if (!form) return;
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const amountInput = document.getElementById("amount");
+        const amount = parseFloat(amountInput.value);
+        const from = document.getElementById("from-currency").value;
+        const to = document.getElementById("to-currency").value;
+        const dateInput = document.getElementById("rate-date");
+        const selectedDate = dateInput ? dateInput.value : null;
+        const output = document.getElementById("converted-amount");
+
+        if (!amount || isNaN(amount) || from === to || (selectedDate === "2024-09-07")) {
+            output.innerText = "Invalid input";
+            return;
+        }
+
+        const result = handleConversion(from, to, amount, selectedDate);
+        if (result === 0) {
+            output.innerText = "Invalid input";
+        } else {
+            output.innerText = `Converted Amount: ${result} ${to}`;
+        }
+    });
+}
+
+// Initialize
+populateCurrencyOptions();
+setupConversionForm();

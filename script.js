@@ -95,8 +95,6 @@ function getRateByDate(selectedDate) {
         const periods = Math.floor(diffInDays / 108); // 108 days ≈ 3.6 months
         const decreasedUsd = decreaseRate(baseRate, periods);
         const decreasedEur = decreaseRate(baseEur, periods);
-        const decreasedUsd = decreaseRate(baseRate, periods);
-        const decreasedEur = decreaseRate(baseEur, periods);
 
         return { usd: +decreasedUsd.toFixed(2), eur: +decreasedEur.toFixed(2) };
     }

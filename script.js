@@ -2,6 +2,7 @@
 const currencyList = ["EGP", "USD", "EUR", "NGN", "ZAR", "KES", "GHS", "TND"];
 
 // Populate currency dropdowns
+function populateCurrencyOptions() {
     const fromSelects = document.querySelectorAll("#from-currency");
     const toSelects = document.querySelectorAll("#to-currency");
 

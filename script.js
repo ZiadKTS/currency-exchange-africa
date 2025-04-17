@@ -154,32 +154,34 @@ function handleConversion(from, to, amount, selectedDate = null) {
 }
 
 // Main conversion handler
+function setupConversionForm() {
+    const form = document.getElementById("converter-form");
+    if (!form) return;
+    
 form.addEventListener("submit", function (e) {
-        e.preventDefault();
+    e.preventDefault();
+    const amount = parseFloat(document.getElementById("amount").value);
+    const from = document.getElementById("from-currency").value;
+    const to = document.getElementById("to-currency").value;
+    const dateInput = document.getElementById("rate-date");
+    const selectedDate = dateInput ? dateInput.value : null;
 
-        const amount = parseFloat(document.getElementById("amount").value);
-        const from = document.getElementById("from-currency").value;
-        const to = document.getElementById("to-currency").value;
-        const dateInput = document.getElementById("rate-date");
-        const selectedDate = dateInput ? dateInput.value : null;
-
-        // 💡 FUTURE DATE CHECK
-        if (selectedDate) {
-            const today = new Date();
-            const selected = new Date(selectedDate);
-            // Set time to 00:00 to compare only dates
-            selected.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
-            if (selected > today) {
-                alert("You cannot select a future date for conversion.");
-                return;
-            }
+    // 💡 FUTURE DATE CHECK
+    if (selectedDate) {
+        const today = new Date();
+        const selected = new Date(selectedDate);
+        if (selected > today) {
+            alert("You cannot select a future date for conversion.");
+            return;
         }
+    }
+
     const result = handleConversion(from, to, amount, selectedDate);
     const output = document.getElementById("converted-amount");
 
     if (output) {
         output.innerText = `Converted Amount: ${result} ${to}`;
+
     }
 });
 
@@ -197,4 +199,3 @@ document.addEventListener("DOMContentLoaded", () => {
     populateCurrencyOptions();
     setupConversionForm();
 });
-

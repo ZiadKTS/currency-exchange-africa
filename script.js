@@ -158,13 +158,6 @@ function setupConversionForm() {
     const form = document.getElementById("converter-form");
     if (!form) return;
 
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const amount = parseFloat(document.getElementById("amount").value);
-        const from = document.getElementById("from-currency").value;
-        const to = document.getElementById("to-currency").value;
-        const dateInput = document.getElementById("rate-date");
-        const selectedDate = dateInput ? dateInput.value : null;
 form.addEventListener("submit", function (e) {
     e.preventDefault();
     const amount = parseFloat(document.getElementById("amount").value);

@@ -165,6 +165,31 @@ function setupConversionForm() {
         const to = document.getElementById("to-currency").value;
         const dateInput = document.getElementById("rate-date");
         const selectedDate = dateInput ? dateInput.value : null;
+form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const amount = parseFloat(document.getElementById("amount").value);
+    const from = document.getElementById("from-currency").value;
+    const to = document.getElementById("to-currency").value;
+    const dateInput = document.getElementById("rate-date");
+    const selectedDate = dateInput ? dateInput.value : null;
+
+    // 💡 FUTURE DATE CHECK
+    if (selectedDate) {
+        const today = new Date();
+        const selected = new Date(selectedDate);
+        if (selected > today) {
+            alert("You cannot select a future date for conversion.");
+            return;
+        }
+    }
+
+    const result = handleConversion(from, to, amount, selectedDate);
+    const output = document.getElementById("converted-amount");
+
+    if (output) {
+        output.innerText = `Converted Amount: ${result} ${to}`;
+    }
+});
 
         const result = handleConversion(from, to, amount, selectedDate);
         const output = document.getElementById("converted-amount");

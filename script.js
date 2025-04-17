@@ -64,9 +64,9 @@ function decreaseRate(rate, monthsBack) {
 // Historical rate data with new rules and dynamic decrease logic
 const historicalRates = [
     { date: '2024-07-01', usd: 57, eur: 64.98 },  // July 1, 2024 - Dec 9, 2024
-    { date: '2024-12-10', usd: 60, eur: 68.4 },  // Dec 10, 2024 - Mar 13, 2025
+    { date: '2024-12-10', usd: 60, eur: 68.4 },  // Dec 10, 2024 - Mar 18, 2025
     { date: '2025-02-03', usd: 65, eur: 68.25 },  // Feb 3, 2025
-    { date: '2025-03-14', usd: 63.5, eur: 72.39 },  // March 14, 2025 - April 7, 2025
+    { date: '2025-03-18', usd: 63.5, eur: 72.39 },  // March 19, 2025 - April 7, 2025
     { date: '2025-04-04', usd: 64, eur: 72.96 }  // April 8, 2025 onward
 ];
 
@@ -75,7 +75,7 @@ function getRateByDate(selectedDate) {
     const dStartFixed = new Date('2024-07-01');
     const d1 = new Date('2024-12-10');
     const d2 = new Date('2024-02-03');   // Special date
-    const d3 = new Date('2025-03-14');
+    const d3 = new Date('2025-03-19');
     const d4 = new Date('2025-04-07');
     const dErrorDate = new Date('2024-09-17');  // Error date
 
@@ -108,10 +108,10 @@ if (date.toISOString().slice(0, 10) === '2025-02-03') {
     // July 1, 2024 - Dec 9, 2024
     return { usd: 57, eur: 64.98 };
 } else if (date >= d1 && date < d3) {
-    // Dec 10, 2024 - Mar 13, 2025
+    // Dec 10, 2024 - Mar 18, 2025
     return { usd: 60, eur: 68.4 };
 } else if (date >= d3 && date < d4) {
-    // March 14, 2025 - April 7, 2025
+    // March 19, 2025 - April 7, 2025
     return { usd: 63.5, eur: 72.39 };
 } else if (date >= d4) {
     // April 7, 2025 onward

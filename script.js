@@ -79,6 +79,8 @@ function getRateByDate(selectedDate) {
     const d2 = new Date('2024-02-03');   // Special date
     const d3 = new Date('2025-03-19');
     const d4 = new Date('2025-04-07');
+    const d5 = new Date('2025-04-17');
+    const d6 = new Date('2025-05-11');
     const dErrorDate = new Date('2024-09-17');  // Error date
 
     const date = new Date(selectedDate);
@@ -127,7 +129,7 @@ if (date.toISOString().slice(0, 10) === '2025-02-03') {
 } else {
     return null;
 }
-
+}
 // Conversion logic with fallback for missing historical data
 function handleConversion(from, to, amount, selectedDate = null) {
     let rate = 1;
@@ -172,23 +174,14 @@ form.addEventListener("submit", function (e) {
     const selectedDate = dateInput ? dateInput.value : null;
 
     // 💡 FUTURE DATE CHECK
-    if (selectedDate) {
-        const today = new Date();
-        const selected = new Date(selectedDate);
-        if (selected > today) {
-            alert("You cannot select a future date for conversion.");
-            return;
+        if (selectedDate) {
+            const today = new Date();
+            const selected = new Date(selectedDate);
+            if (selected > today) {
+                alert("You cannot select a future date for conversion.");
+                return;
+            }
         }
-    }
-
-    const result = handleConversion(from, to, amount, selectedDate);
-    const output = document.getElementById("converted-amount");
-
-    if (output) {
-        output.innerText = `Converted Amount: ${result} ${to}`;
-
-    }
-});
 
         const result = handleConversion(from, to, amount, selectedDate);
         const output = document.getElementById("converted-amount");
@@ -199,7 +192,7 @@ form.addEventListener("submit", function (e) {
     });
 }
 
-// Initialize both live converter and rate history form
+// ✅ Initialize on DOM load
 document.addEventListener("DOMContentLoaded", () => {
     populateCurrencyOptions();
     setupConversionForm();

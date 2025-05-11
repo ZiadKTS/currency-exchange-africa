@@ -64,10 +64,12 @@ function decreaseRate(rate, monthsBack) {
 // Historical rate data with new rules and dynamic decrease logic
 const historicalRates = [
     { date: '2024-07-01', usd: 57, eur: 64.98 },  // July 1, 2024 - Dec 9, 2024
-    { date: '2024-12-10', usd: 60, eur: 68.4 },  // Dec 10, 2024 - Mar 18, 2025
+    { date: '2024-12-10', usd: 60, eur: 68.4 },   // Dec 10, 2024 - Mar 18, 2025
     { date: '2025-02-03', usd: 65, eur: 68.25 },  // Feb 3, 2025
     { date: '2025-03-18', usd: 63.5, eur: 72.39 },  // March 19, 2025 - April 7, 2025
-    { date: '2025-04-04', usd: 64, eur: 72.96 }  // April 8, 2025 onward
+    { date: '2025-04-04', usd: 64, eur: 72.96 },  // April 8, 2025 - April 16, 2025
+    { date: '2025-04-17', usd: 61, eur: 70.23 },  // April 17, 2025 - May 10, 2025
+    { date: '2025-05-11', usd: 63, eur: 71.82 }   // May 11, 2025 onward
 ];
 
 // Function to get historical rate data by date with error handling for September 17, 2024

@@ -30,7 +30,7 @@ function populateCurrencyOptions() {
 const liveRates = { 
     'EGP-USD': 1 / 64,
     'EGP-EUR': 1 / 72.96,
-    'USD-EGP': 61,
+    'USD-EGP': 63,
     'EUR-USD': 1.14,
     'USD-EUR': 0.8772,
     'EUR-EGP': 72.96,

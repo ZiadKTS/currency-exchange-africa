@@ -113,17 +113,20 @@ if (date.toISOString().slice(0, 10) === '2025-02-03') {
     // Dec 10, 2024 - Mar 18, 2025
     return { usd: 60, eur: 68.4 };
 } else if (date >= d3 && date < d4) {
-    // March 19, 2025 - April 7, 2025
+    // March 19, 2025 - April 6, 2025
     return { usd: 63.5, eur: 72.39 };
-} else if (date >= d4) {
-    // April 7, 2025 onward
+} else if (date >= d4 && date < d5) {
+    // April 7, 2025 - April 16, 2025
     return { usd: 64, eur: 72.96 };
+} else if (date >= d5 && date < d6) {
+    // April 17, 2025 - May 10, 2025
+    return { usd: 61, eur: 70.23 };
+} else if (date >= d6) {
+    // May 11, 2025 onward
+    return { usd: 63, eur: 71.82 };
 } else {
     return null;
-  // If no historical data, return null
-    }
 }
-
 
 // Conversion logic with fallback for missing historical data
 function handleConversion(from, to, amount, selectedDate = null) {

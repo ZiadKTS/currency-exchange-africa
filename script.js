@@ -1,4 +1,4 @@
-// Supported currencies 
+  // Supported currencies 
 const currencyList = ["EGP", "USD", "EUR", "NGN", "ZAR", "KES", "GHS", "TND"];
 
 // Populate currency dropdowns
@@ -28,7 +28,7 @@ function populateCurrencyOptions() {
 
 // Live and Historical Conversion Rates
 const liveRates = { 
-    'EGP-USD': 1 / 64,
+    'EGP-USD': 1 / 63,
     'EGP-EUR': 1 / 72.96,
     'USD-EGP': 63,
     'EUR-USD': 1.14,

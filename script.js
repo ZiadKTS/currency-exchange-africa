@@ -28,12 +28,12 @@ function populateCurrencyOptions() {
 
 // Live and Historical Conversion Rates
 const liveRates = { 
-    'EGP-USD': 1 / 63,
-    'EGP-EUR': 1 / 72.96,
-    'USD-EGP': 63,
+    'EGP-USD': 1 / 62,
+    'EGP-EUR': 1 / 54.3864,
+    'USD-EGP': 62,
     'EUR-USD': 1.14,
     'USD-EUR': 0.8772,
-    'EUR-EGP': 72.96,
+    'EUR-EGP': 54.3864,
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
     'KES-USD': 0.0069,
@@ -63,13 +63,14 @@ function decreaseRate(rate, monthsBack) {
 
 // Historical rate data with new rules and dynamic decrease logic
 const historicalRates = [
-    { date: '2024-07-01', usd: 57, eur: 64.98 },  // July 1, 2024 - Dec 9, 2024
-    { date: '2024-12-10', usd: 60, eur: 68.4 },   // Dec 10, 2024 - Mar 18, 2025
-    { date: '2025-02-03', usd: 65, eur: 68.25 },  // Feb 3, 2025
-    { date: '2025-03-18', usd: 63.5, eur: 72.39 },  // March 19, 2025 - April 7, 2025
-    { date: '2025-04-04', usd: 64, eur: 72.96 },  // April 8, 2025 - April 16, 2025
-    { date: '2025-04-17', usd: 61, eur: 70.23 },  // April 17, 2025 - May 10, 2025
-    { date: '2025-05-11', usd: 63, eur: 71.82 }   // May 11, 2025 onward
+    { date: '2025-05-14', usd: 62, eur: 54.39 },  // May 14, 2025 onward
+    { date: '2025-05-11', usd: 63, eur: 71.82 },  // May 11–13, 2025
+    { date: '2025-04-17', usd: 61, eur: 70.23 },  // April 17–May 10, 2025
+    { date: '2025-04-04', usd: 64, eur: 72.96 },  // April 8–16, 2025
+    { date: '2025-03-18', usd: 63.5, eur: 72.39 },  // March 19–April 7, 2025
+    { date: '2025-02-03', usd: 65, eur: 68.25 },  // February 3, 2025
+    { date: '2024-12-10', usd: 60, eur: 68.4 },   // Dec 10, 2024 – Mar 18, 2025
+    { date: '2024-07-01', usd: 57, eur: 64.98 }   // July 1 – Dec 9, 2024
 ];
 
 // Function to get historical rate data by date with error handling for September 17, 2024
@@ -81,6 +82,7 @@ function getRateByDate(selectedDate) {
     const d4 = new Date('2025-04-07');
     const d5 = new Date('2025-04-17');
     const d6 = new Date('2025-05-11');
+    const d7 = new Date('2025-05-14');  // May 14, 2025
     const dErrorDate = new Date('2024-09-17');  // Error date
 
     const date = new Date(selectedDate);
@@ -106,29 +108,32 @@ function getRateByDate(selectedDate) {
     }
 
     // ✅ Special case: February 3, 2025
-if (date.toISOString().slice(0, 10) === '2025-02-03') {
-    return { usd: 65, eur: 68.25 };
-} else if (date >= dStartFixed && date < d1) {
-    // July 1, 2024 - Dec 9, 2024
-    return { usd: 57, eur: 64.98 };
-} else if (date >= d1 && date < d3) {
-    // Dec 10, 2024 - Mar 18, 2025
-    return { usd: 60, eur: 68.4 };
-} else if (date >= d3 && date < d4) {
-    // March 19, 2025 - April 6, 2025
-    return { usd: 63.5, eur: 72.39 };
-} else if (date >= d4 && date < d5) {
-    // April 7, 2025 - April 16, 2025
-    return { usd: 64, eur: 72.96 };
-} else if (date >= d5 && date < d6) {
-    // April 17, 2025 - May 10, 2025
-    return { usd: 61, eur: 70.23 };
-} else if (date >= d6) {
-    // May 11, 2025 onward
-    return { usd: 63, eur: 71.82 };
-} else {
-    return null;
-}
+    if (date.toISOString().slice(0, 10) === '2025-02-03') {
+        return { usd: 65, eur: 68.25 };
+    } else if (date >= dStartFixed && date < d1) {
+        // July 1, 2024 - Dec 9, 2024
+        return { usd: 57, eur: 64.98 };
+    } else if (date >= d1 && date < d3) {
+        // Dec 10, 2024 - Mar 18, 2025
+        return { usd: 60, eur: 68.4 };
+    } else if (date >= d3 && date < d4) {
+        // March 19, 2025 - April 6, 2025
+        return { usd: 63.5, eur: 72.39 };
+    } else if (date >= d4 && date < d5) {
+        // April 7, 2025 - April 16, 2025
+        return { usd: 64, eur: 72.96 };
+    } else if (date >= d5 && date < d6) {
+        // April 17, 2025 - May 10, 2025
+        return { usd: 61, eur: 70.23 };
+    } else if (date >= d6 && date < d7) {
+        // May 11, 2025 - May 13, 2025
+        return { usd: 63, eur: 71.82 };
+    } else if (date >= d7) {
+        // May 14, 2025 onward
+        return { usd: 62, eur: 54.39 };
+    } else {
+        return null;
+    }
 }
 // Conversion logic with fallback for missing historical data
 function handleConversion(from, to, amount, selectedDate = null) {

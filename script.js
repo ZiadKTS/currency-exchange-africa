@@ -28,9 +28,9 @@ function populateCurrencyOptions() {
 
 // Live and Historical Conversion Rates
 const liveRates = { 
-    'EGP-USD': 1 / 62,
+    'EGP-USD': 1 / 64,
     'EGP-EUR': 1 / 54.3864,
-    'USD-EGP': 62,
+    'USD-EGP': 64,
     'EUR-USD': 1.14,
     'USD-EUR': 0.8772,
     'EUR-EGP': 54.3864,
@@ -63,7 +63,8 @@ function decreaseRate(rate, monthsBack) {
 
 // Historical rate data with new rules and dynamic decrease logic
 const historicalRates = [
-    { date: '2025-05-14', usd: 62, eur: 54.39 },  // May 14, 2025 onward
+    { date: '2025-05-18', usd: 64, eur: 73.15 },  // May 18, 2025 onward (new entry)
+    { date: '2025-05-14', usd: 62, eur: 54.39 },  // May 14–17, 2025
     { date: '2025-05-11', usd: 63, eur: 71.82 },  // May 11–13, 2025
     { date: '2025-04-17', usd: 61, eur: 70.23 },  // April 17–May 10, 2025
     { date: '2025-04-04', usd: 64, eur: 72.96 },  // April 8–16, 2025
@@ -77,60 +78,43 @@ const historicalRates = [
 function getRateByDate(selectedDate) {
     const dStartFixed = new Date('2024-07-01');
     const d1 = new Date('2024-12-10');
-    const d2 = new Date('2024-02-03');   // Special date
+    const d2 = new Date('2025-02-03');   // Special fixed date
     const d3 = new Date('2025-03-19');
-    const d4 = new Date('2025-04-07');
+    const d4 = new Date('2025-04-08');
     const d5 = new Date('2025-04-17');
     const d6 = new Date('2025-05-11');
-    const d7 = new Date('2025-05-14');  // May 14, 2025
-    const dErrorDate = new Date('2024-09-17');  // Error date
+    const d7 = new Date('2025-05-14');
+    const d8 = new Date('2025-05-18');  // New start for updated rate
+    const dErrorDate = new Date('2024-09-17');  // Specific blocked date
 
     const date = new Date(selectedDate);
+    const isoDate = date.toISOString().slice(0, 10);
 
-    // Handle error for September 17, 2024
-    if (date.toISOString().slice(0, 10) === dErrorDate.toISOString().slice(0, 10)) {
+    // Error for September 17, 2024
+    if (isoDate === dErrorDate.toISOString().slice(0, 10)) {
         alert("Error: No conversion available for this date (September 17, 2024).");
-        return null;  // Return null to indicate an error
-    }
-
-    // ✅ NEW: Handle dates BEFORE July 1, 2024 with decreasing rate
-    if (date < dStartFixed) {
-        const baseRate = 57; // Starting rate
-        const baseEur = 64.98;
-
-        const msPerDay = 1000 * 60 * 60 * 24;
-        const diffInDays = Math.floor((dStartFixed - date) / msPerDay);
-        const periods = Math.floor(diffInDays / 108); // 108 days ≈ 3.6 months
-        const decreasedUsd = decreaseRate(baseRate, periods);
-        const decreasedEur = decreaseRate(baseEur, periods);
-
-        return { usd: +decreasedUsd.toFixed(2), eur: +decreasedEur.toFixed(2) };
-    }
+        return null;
+    } 
 
     // ✅ Special case: February 3, 2025
-    if (date.toISOString().slice(0, 10) === '2025-02-03') {
+    if (isoDate === '2025-02-03') {
         return { usd: 65, eur: 68.25 };
     } else if (date >= dStartFixed && date < d1) {
-        // July 1, 2024 - Dec 9, 2024
         return { usd: 57, eur: 64.98 };
     } else if (date >= d1 && date < d3) {
-        // Dec 10, 2024 - Mar 18, 2025
         return { usd: 60, eur: 68.4 };
     } else if (date >= d3 && date < d4) {
-        // March 19, 2025 - April 6, 2025
         return { usd: 63.5, eur: 72.39 };
     } else if (date >= d4 && date < d5) {
-        // April 7, 2025 - April 16, 2025
         return { usd: 64, eur: 72.96 };
     } else if (date >= d5 && date < d6) {
-        // April 17, 2025 - May 10, 2025
         return { usd: 61, eur: 70.23 };
     } else if (date >= d6 && date < d7) {
-        // May 11, 2025 - May 13, 2025
         return { usd: 63, eur: 71.82 };
-    } else if (date >= d7) {
-        // May 14, 2025 onward
+    } else if (date >= d7 && date < d8) {
         return { usd: 62, eur: 54.39 };
+    } else if (date >= d8) {
+        return { usd: 64, eur: 73.15 };  // ✅ New rate from May 18, 2025
     } else {
         return null;
     }

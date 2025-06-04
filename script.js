@@ -28,12 +28,12 @@ function populateCurrencyOptions() {
 
 // Live and Historical Conversion Rates
 const liveRates = { 
-    'EGP-USD': 1 / 63,
-    'EGP-EUR': 1 / 71.84,
-    'USD-EGP': 63,
+    'EGP-USD': 1 / 63.5,
+    'EGP-EUR': 1 / 63.0,
+    'USD-EGP': 63.5,
     'EUR-USD': 1.14,
     'USD-EUR': 0.8772,
-    'EUR-EGP': 71.84,
+    'EUR-EGP': 63.0,
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
     'KES-USD': 0.0069,
@@ -61,10 +61,15 @@ function decreaseRate(rate, monthsBack) {
     return newRate;
 }
 
-// Historical rate data with new rules and dynamic decrease logic
+// Historical rate data with updated USD and EUR values from May 29 onward
 const historicalRates = [
-    { date: '2025-06-04', usd: 63, eur: 71.84 },    
-    { date: '2025-06-03', usd: 63.5, eur: 55.68 },   
+    { date: '2025-06-04', usd: 63.5, eur: 63.0 },
+    { date: '2025-06-03', usd: 63.5, eur: 63.0 },
+    { date: '2025-06-02', usd: 63.5, eur: 63.0 },
+    { date: '2025-06-01', usd: 63.5, eur: 63.0 },
+    { date: '2025-05-31', usd: 63.5, eur: 63.0 },
+    { date: '2025-05-30', usd: 63.5, eur: 63.0 },
+    { date: '2025-05-29', usd: 63.5, eur: 63.0 },
     { date: '2025-05-18', usd: 64, eur: 73.15 },
     { date: '2025-05-14', usd: 62, eur: 54.39 },
     { date: '2025-05-11', usd: 63, eur: 71.82 },
@@ -80,7 +85,7 @@ const historicalRates = [
 function getRateByDate(selectedDate) {
     const dStartFixed = new Date('2024-07-01');
     const d1 = new Date('2024-12-10');
-    const d2 = new Date('2025-02-03');   // Special fixed date
+    const d2 = new Date('2025-02-03');
     const d3 = new Date('2025-03-19');
     const d4 = new Date('2025-04-08');
     const d5 = new Date('2025-04-17');
@@ -88,14 +93,12 @@ function getRateByDate(selectedDate) {
     const d7 = new Date('2025-05-14');
     const d8 = new Date('2025-05-18');
     const d9 = new Date('2025-05-29');
-    const d10 = new Date('2025-06-03');  // Yesterday
-    const d11 = new Date('2025-06-04');  // Today
+    const dToday = new Date('2025-06-04');
     const dErrorDate = new Date('2024-09-17');
 
     const date = new Date(selectedDate);
     const isoDate = date.toISOString().slice(0, 10);
 
-    // Error for September 17, 2024
     if (isoDate === dErrorDate.toISOString().slice(0, 10)) {
         alert("Error: No conversion available for this date (September 17, 2024).");
         return null;
@@ -119,10 +122,8 @@ function getRateByDate(selectedDate) {
         return { usd: 62, eur: 54.39 };
     } else if (date >= d8 && date < d9) {
         return { usd: 64, eur: 73.15 };
-    } else if (isoDate === '2025-06-03') {
-        return { usd: 63.5, eur: 55.68 };  // ✅ Yesterday
-    } else if (date >= d11) {
-        return { usd: 63, eur: 71.84 };  // ✅ Today onward
+    } else if (date >= d9) {
+        return { usd: 63.5, eur: 63.0 };
     } else {
         return null;
     }

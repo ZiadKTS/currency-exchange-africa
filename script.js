@@ -63,9 +63,8 @@ function decreaseRate(rate, monthsBack) {
 
 // Historical rate data with new rules and dynamic decrease logic
 const historicalRates = [
-    { date: '2025-06-04', usd: 63, eur: 71.84 },     // ✅ Today
-    { date: '2025-06-03', usd: 63.5, eur: 55.68 },   // ✅ Yesterday
-    { date: '2025-05-29', usd: 63, eur: 71.84 },     // May 29 – Jun 2
+    { date: '2025-06-04', usd: 63, eur: 71.84 },    
+    { date: '2025-06-03', usd: 63.5, eur: 55.68 },   
     { date: '2025-05-18', usd: 64, eur: 73.15 },
     { date: '2025-05-14', usd: 62, eur: 54.39 },
     { date: '2025-05-11', usd: 63, eur: 71.82 },

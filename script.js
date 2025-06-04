@@ -123,8 +123,6 @@ function getRateByDate(selectedDate) {
         return { usd: 63.5, eur: 55.68 };  // ✅ Yesterday
     } else if (date >= d11) {
         return { usd: 63, eur: 71.84 };  // ✅ Today onward
-    } else if (date >= d9 && date < d10) {
-        return { usd: 63, eur: 71.84 };  // May 29 – June 2
     } else {
         return null;
     }

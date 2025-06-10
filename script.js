@@ -26,24 +26,28 @@ function populateCurrencyOptions() {
     });
 }
 
-// Live and Historical Conversion Rates
+// Live Conversion Rates
+// ===============================
 const liveRates = { 
-    'EGP-USD': 1 / 63,
+    'EGP-USD': 1 / 62.49,
     'EGP-EUR': 1 / 63.0,
-    'USD-EGP': 63.5,
+    'USD-EGP': 62.49,
     'EUR-USD': 1.14,
     'USD-EUR': 0.8772,
     'EUR-EGP': 63.0,
+
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
     'KES-USD': 0.0069,
     'GHS-USD': 0.17,
     'TND-USD': 0.32,
+
     'USD-NGN': 414.3,
     'USD-ZAR': 16.3,
     'USD-KES': 145.9,
     'USD-GHS': 5.9,
     'USD-TND': 3.1,
+
     'NGN-EGP': 0.243,
     'ZAR-EGP': 0.22,
     'KES-EGP': 0.23,
@@ -51,25 +55,35 @@ const liveRates = {
     'TND-EGP': 0.19
 };
 
-// Helper function to decrease the rate by 5% every 3.6 months
+// ===============================
+// Helper Function (optional)
+// ===============================
 function decreaseRate(rate, monthsBack) {
     let newRate = rate;
-    const decreaseFactor = 0.95;  // 5% decrease
+    const decreaseFactor = 0.95;
     for (let i = 0; i < monthsBack; i++) {
         newRate *= decreaseFactor;
     }
     return newRate;
 }
 
-// Historical rate data with updated USD and EUR values from May 29 onward
+// ===============================
+// Historical Rates (Fixed)
+// ===============================
 const historicalRates = [
-    { date: '2025-06-04', usd: 63.5, eur: 63.0 },
-    { date: '2025-06-03', usd: 63.5, eur: 63.0 },
-    { date: '2025-06-02', usd: 63.5, eur: 63.0 },
-    { date: '2025-06-01', usd: 63.5, eur: 63.0 },
-    { date: '2025-05-31', usd: 63.5, eur: 63.0 },
-    { date: '2025-05-30', usd: 63.5, eur: 63.0 },
-    { date: '2025-05-29', usd: 63.5, eur: 63.0 },
+    { date: '2025-06-10', usd: 62.49, eur: 63.0 },
+    { date: '2025-06-09', usd: 63.0, eur: 63.0 },
+    { date: '2025-06-08', usd: 63.0, eur: 63.0 },
+    { date: '2025-06-07', usd: 63.0, eur: 63.0 },
+    { date: '2025-06-06', usd: 63.0, eur: 63.0 },
+    { date: '2025-06-05', usd: 63.0, eur: 63.0 },
+    { date: '2025-06-04', usd: 63.0, eur: 63.0 },
+    { date: '2025-06-03', usd: 63.0, eur: 63.0 },
+    { date: '2025-06-02', usd: 63.0, eur: 63.0 },
+    { date: '2025-06-01', usd: 63.0, eur: 63.0 },
+    { date: '2025-05-31', usd: 63.0, eur: 63.0 },
+    { date: '2025-05-30', usd: 63.0, eur: 63.0 },
+    { date: '2025-05-29', usd: 63.0, eur: 63.0 },
     { date: '2025-05-18', usd: 64, eur: 73.15 },
     { date: '2025-05-14', usd: 62, eur: 54.39 },
     { date: '2025-05-11', usd: 63, eur: 71.82 },
@@ -81,7 +95,9 @@ const historicalRates = [
     { date: '2024-07-01', usd: 57, eur: 64.98 }
 ];
 
-// Function to get historical rate data by date with error handling for September 17, 2024
+// ===============================
+// Get Rate by Date
+// ===============================
 function getRateByDate(selectedDate) {
     const dStartFixed = new Date('2024-07-01');
     const d1 = new Date('2024-12-10');
@@ -93,7 +109,7 @@ function getRateByDate(selectedDate) {
     const d7 = new Date('2025-05-14');
     const d8 = new Date('2025-05-18');
     const d9 = new Date('2025-05-29');
-    const dToday = new Date('2025-06-04');
+    const dNewRate = new Date('2025-06-10');
     const dErrorDate = new Date('2024-09-17');
 
     const date = new Date(selectedDate);
@@ -104,26 +120,28 @@ function getRateByDate(selectedDate) {
         return null;
     }
 
-    if (isoDate === '2025-02-03') {
-        return { usd: 65, eur: 68.25 };
-    } else if (date >= dStartFixed && date < d1) {
-        return { usd: 57, eur: 64.98 };
-    } else if (date >= d1 && date < d3) {
-        return { usd: 60, eur: 68.4 };
-    } else if (date >= d3 && date < d4) {
-        return { usd: 63.5, eur: 72.39 };
-    } else if (date >= d4 && date < d5) {
-        return { usd: 64, eur: 72.96 };
-    } else if (date >= d5 && date < d6) {
-        return { usd: 61, eur: 70.23 };
-    } else if (date >= d6 && date < d7) {
-        return { usd: 63, eur: 71.82 };
-    } else if (date >= d7 && date < d8) {
-        return { usd: 62, eur: 54.39 };
+    if (date >= dNewRate) {
+        return { usd: 62.49, eur: 63.0 };
+    } else if (date >= d9 && date < dNewRate) {
+        return { usd: 63.0, eur: 63.0 };
     } else if (date >= d8 && date < d9) {
         return { usd: 64, eur: 73.15 };
-    } else if (date >= d9) {
-        return { usd: 63.5, eur: 63.0 };
+    } else if (date >= d7 && date < d8) {
+        return { usd: 62, eur: 54.39 };
+    } else if (date >= d6 && date < d7) {
+        return { usd: 63, eur: 71.82 };
+    } else if (date >= d5 && date < d6) {
+        return { usd: 61, eur: 70.23 };
+    } else if (date >= d4 && date < d5) {
+        return { usd: 64, eur: 72.96 };
+    } else if (date >= d3 && date < d4) {
+        return { usd: 63.5, eur: 72.39 };
+    } else if (date >= d2 && date < d3) {
+        return { usd: 65, eur: 68.25 };
+    } else if (date >= d1 && date < d2) {
+        return { usd: 60, eur: 68.4 };
+    } else if (date >= dStartFixed && date < d1) {
+        return { usd: 57, eur: 64.98 };
     } else {
         return null;
     }

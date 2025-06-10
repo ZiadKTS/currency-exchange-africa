@@ -28,7 +28,7 @@ function populateCurrencyOptions() {
 
 // Live and Historical Conversion Rates
 const liveRates = { 
-    'EGP-USD': 1 / 63.5,
+    'EGP-USD': 1 / 63,
     'EGP-EUR': 1 / 63.0,
     'USD-EGP': 63.5,
     'EUR-USD': 1.14,

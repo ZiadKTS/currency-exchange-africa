@@ -29,12 +29,12 @@ function populateCurrencyOptions() {
 // Live Conversion Rates
 // ===============================
 const liveRates = { 
-    'EGP-USD': 1 / 62.49,
-    'EGP-EUR': 1 / 63.0,
-    'USD-EGP': 62.49,
-    'EUR-USD': 1.14,
-    'USD-EUR': 0.8772,
-    'EUR-EGP': 63.0,
+    'EGP-USD': 1 / 61.8,
+    'EGP-EUR': 1 / 62.3,
+    'USD-EGP': 61.8,
+    'EUR-USD': 63.0 / 62.49,           // ≈ 1.0081
+    'USD-EUR': 62.49 / 63.0,           // ≈ 0.9921
+    'EUR-EGP': 62.3,
 
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
@@ -68,50 +68,27 @@ function decreaseRate(rate, monthsBack) {
 }
 
 // ===============================
-// Historical Rates (Fixed)
+// Historical Rates (By Period)
 // ===============================
 const historicalRates = [
-    { date: '2025-06-10', usd: 62.49, eur: 63.0 },
-    { date: '2025-06-09', usd: 63.0, eur: 63.0 },
-    { date: '2025-06-08', usd: 63.0, eur: 63.0 },
-    { date: '2025-06-07', usd: 63.0, eur: 63.0 },
-    { date: '2025-06-06', usd: 63.0, eur: 63.0 },
-    { date: '2025-06-05', usd: 63.0, eur: 63.0 },
-    { date: '2025-06-04', usd: 63.0, eur: 63.0 },
-    { date: '2025-06-03', usd: 63.0, eur: 63.0 },
-    { date: '2025-06-02', usd: 63.0, eur: 63.0 },
-    { date: '2025-06-01', usd: 63.0, eur: 63.0 },
-    { date: '2025-05-31', usd: 63.0, eur: 63.0 },
-    { date: '2025-05-30', usd: 63.0, eur: 63.0 },
-    { date: '2025-05-29', usd: 63.0, eur: 63.0 },
-    { date: '2025-05-18', usd: 64, eur: 73.15 },
-    { date: '2025-05-14', usd: 62, eur: 54.39 },
-    { date: '2025-05-11', usd: 63, eur: 71.82 },
-    { date: '2025-04-17', usd: 61, eur: 70.23 },
-    { date: '2025-04-04', usd: 64, eur: 72.96 },
-    { date: '2025-03-18', usd: 63.5, eur: 72.39 },
-    { date: '2025-02-03', usd: 65, eur: 68.25 },
-    { date: '2024-12-10', usd: 60, eur: 68.4 },
-    { date: '2024-07-01', usd: 57, eur: 64.98 }
+    { start: '2025-06-24', usd: 61.8, eur: 62.3 },
+    { start: '2025-05-29', usd: 62.49, eur: 63.0 },
+    { start: '2025-05-18', usd: 64, eur: 73.15 },
+    { start: '2025-05-14', usd: 62, eur: 54.39 },
+    { start: '2025-05-11', usd: 63, eur: 71.82 },
+    { start: '2025-04-17', usd: 61, eur: 70.23 },
+    { start: '2025-04-04', usd: 64, eur: 72.96 },
+    { start: '2025-03-18', usd: 63.5, eur: 72.39 },
+    { start: '2025-02-03', usd: 65, eur: 68.25 },
+    { start: '2024-12-10', usd: 60, eur: 68.4 },
+    { start: '2024-07-01', usd: 57, eur: 64.98 }
 ];
 
 // ===============================
-// Get Rate by Date
+// Get Rate by Date (Updated Logic)
 // ===============================
 function getRateByDate(selectedDate) {
-    const dStartFixed = new Date('2024-07-01');
-    const d1 = new Date('2024-12-10');
-    const d2 = new Date('2025-02-03');
-    const d3 = new Date('2025-03-19');
-    const d4 = new Date('2025-04-08');
-    const d5 = new Date('2025-04-17');
-    const d6 = new Date('2025-05-11');
-    const d7 = new Date('2025-05-14');
-    const d8 = new Date('2025-05-18');
-    const d9 = new Date('2025-05-29');
-    const dNewRate = new Date('2025-06-10');
     const dErrorDate = new Date('2024-09-17');
-
     const date = new Date(selectedDate);
     const isoDate = date.toISOString().slice(0, 10);
 
@@ -120,32 +97,21 @@ function getRateByDate(selectedDate) {
         return null;
     }
 
-    if (date >= dNewRate) {
-        return { usd: 62.49, eur: 63.0 };
-    } else if (date >= d9 && date < dNewRate) {
-        return { usd: 63.0, eur: 63.0 };
-    } else if (date >= d8 && date < d9) {
-        return { usd: 64, eur: 73.15 };
-    } else if (date >= d7 && date < d8) {
-        return { usd: 62, eur: 54.39 };
-    } else if (date >= d6 && date < d7) {
-        return { usd: 63, eur: 71.82 };
-    } else if (date >= d5 && date < d6) {
-        return { usd: 61, eur: 70.23 };
-    } else if (date >= d4 && date < d5) {
-        return { usd: 64, eur: 72.96 };
-    } else if (date >= d3 && date < d4) {
-        return { usd: 63.5, eur: 72.39 };
-    } else if (date >= d2 && date < d3) {
-        return { usd: 65, eur: 68.25 };
-    } else if (date >= d1 && date < d2) {
-        return { usd: 60, eur: 68.4 };
-    } else if (date >= dStartFixed && date < d1) {
-        return { usd: 57, eur: 64.98 };
-    } else {
-        return null;
+    for (let i = 0; i < historicalRates.length; i++) {
+        const current = new Date(historicalRates[i].start);
+        const next = i > 0 ? new Date(historicalRates[i - 1].start) : null;
+
+        if ((next && date >= current && date < next) || (!next && date >= current)) {
+            return {
+                usd: historicalRates[i].usd,
+                eur: historicalRates[i].eur
+            };
+        }
     }
+
+    return null;
 }
+
 
 // Conversion logic with fallback for missing historical data
 function handleConversion(from, to, amount, selectedDate = null) {

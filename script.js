@@ -29,11 +29,11 @@ function populateCurrencyOptions() {
 // Live Conversion Rates
 // ===============================
 const liveRates = { 
-    'EGP-USD': 1 / 61.8,
+    'EGP-USD': 1 / 58,
     'EGP-EUR': 1 / 62.3,
-    'USD-EGP': 61.8,
-    'EUR-USD': 63.0 / 62.49,           // ≈ 1.0081
-    'USD-EUR': 62.49 / 63.0,           // ≈ 0.9921
+    'USD-EGP': 58,
+    'EUR-USD': 62.3 / 58,              // ≈ 1.0759
+    'USD-EUR': 58 / 62.3,              // ≈ 0.9305
     'EUR-EGP': 62.3,
 
     'NGN-USD': 0.0024,
@@ -71,7 +71,8 @@ function decreaseRate(rate, monthsBack) {
 // Historical Rates (By Period)
 // ===============================
 const historicalRates = [
-    { start: '2025-06-24', usd: 61.8, eur: 62.3 },
+    { start: '2025-07-04', usd: 58, eur: 62.3 },        // ✅ New rate from July 4, 2025
+    { start: '2025-06-24', usd: 61.8, eur: 62.3 },       // Ended July 3, 2025
     { start: '2025-05-29', usd: 62.49, eur: 63.0 },
     { start: '2025-05-18', usd: 64, eur: 73.15 },
     { start: '2025-05-14', usd: 62, eur: 54.39 },

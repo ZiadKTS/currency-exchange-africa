@@ -71,7 +71,7 @@ function decreaseRate(rate, monthsBack) {
 // Historical Rates (By Period)
 // ===============================
 const historicalRates = [
-    { start: '2025-07-04', end: '2025-07-17', usd: 58, eur: 62.3 }, // Closed today
+    { start: '2025-07-04', end: '2025-07-16', usd: 58, eur: 62.3 }, // Closed today
     { start: '2025-06-24', usd: 61.8, eur: 62.3 },
     { start: '2025-05-29', usd: 62.49, eur: 63.0 },
     { start: '2025-05-18', usd: 64, eur: 73.15 },

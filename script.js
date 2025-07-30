@@ -67,7 +67,6 @@ function decreaseRate(rate, monthsBack) {
     return newRate;
 }
 
-// ===============================
 // Historical Rates (By Period)
 // ===============================
 const historicalRates = [
@@ -115,6 +114,16 @@ const historicalRates = [
         start: '2025-01-01', end: '2025-03-09',
         usd: 64, eur: 70,
         ngn: 0.242, zar: 0.221, kes: 0.23, ghs: 0.168, tnd: 0.189
+    },
+    {
+        start: '2024-12-10',
+        usd: 60,
+        eur: 68.4
+    },
+    {
+        start: '2024-07-01',
+        usd: 57,
+        eur: 64.98
     }
 ];
 

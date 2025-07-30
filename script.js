@@ -127,6 +127,13 @@ const historicalRates = [
     }
 ];
 
+// Calculates the number of months between two dates
+function getMonthsDifference(olderDate, newerDate) {
+    const years = newerDate.getFullYear() - olderDate.getFullYear();
+    const months = newerDate.getMonth() - olderDate.getMonth();
+    return (years * 12) + months;
+}
+
 // ===============================
 // Get Rate by Date (Updated Logic)
 function getRateByDate(selectedDate) {
@@ -163,8 +170,28 @@ if (date > today) {
         }
     }
 
-    return null;
-}
+      // Simulate rates before July 2024
+    const earliest = new Date('2024-07-01');
+    const oldestSupported = new Date('2023-01-01');
+
+    if (date < earliest && date >= oldestSupported) {
+        const monthsBack = getMonthsDifference(date, earliest);
+        return {
+            usd: decreaseRate(57, monthsBack),
+            eur: decreaseRate(64.98, monthsBack),
+            ngn: decreaseRate(0.243, monthsBack),
+            zar: decreaseRate(0.22, monthsBack),
+            kes: decreaseRate(0.23, monthsBack),
+            ghs: decreaseRate(0.17, monthsBack),
+            tnd: decreaseRate(0.19, monthsBack)
+        };
+    }
+
+    if (date < oldestSupported) {
+        alert("Sorry, we don't support conversions before January 1, 2023.");
+        return null;
+    }
+
 // Conversion logic with fallback for missing historical data
 function handleConversion(from, to, amount, selectedDate = null) {
     let rate = 1;

@@ -120,7 +120,6 @@ const historicalRates = [
 
 // ===============================
 // Get Rate by Date (Updated Logic)
-// ===============================
 function getRateByDate(selectedDate) {
     const dErrorDate = new Date('2024-09-17');
     const date = new Date(selectedDate);
@@ -138,38 +137,48 @@ function getRateByDate(selectedDate) {
         if ((next && date >= current && date < next) || (!next && date >= current)) {
             return {
                 usd: historicalRates[i].usd,
-                eur: historicalRates[i].eur
+                eur: historicalRates[i].eur,
+                ngn: historicalRates[i].ngn,
+                zar: historicalRates[i].zar,
+                kes: historicalRates[i].kes,
+                ghs: historicalRates[i].ghs,
+                tnd: historicalRates[i].tnd
             };
         }
     }
 
     return null;
 }
-
-
 // Conversion logic with fallback for missing historical data
 function handleConversion(from, to, amount, selectedDate = null) {
+    let rate = 1;
+
+   function handleConversion(amount, from, to, selectedDate, liveRates) {
     let rate = 1;
 
     if (selectedDate) {
         const historical = getRateByDate(selectedDate);
         if (!historical) {
             alert("No historical data available for this date. Showing live rates instead.");
-            // If no historical data, use live rates
             const key = `${from}-${to}`;
             rate = liveRates[key] || 1;
         } else {
-            // Conversion logic for historical rates
-            if (from === 'EGP' && to === 'USD') rate = 1 / historical.usd;
-            else if (from === 'EGP' && to === 'EUR') rate = 1 / historical.eur;
-            else if (from === 'USD' && to === 'EGP') rate = historical.usd;
-            else if (from === 'EUR' && to === 'EGP') rate = historical.eur;
-            else if (from === 'USD' && to === 'EUR') rate = historical.eur / historical.usd;
-            else if (from === 'EUR' && to === 'USD') rate = historical.usd / historical.eur;
-            else if (from === to) rate = 1;
+            // Historical conversion logic (supports all currencies)
+            if (from === to) {
+                rate = 1;
+            } else if (from === 'EGP') {
+                rate = 1 / (historical[to.toLowerCase()] || 1);
+            } else if (to === 'EGP') {
+                rate = historical[from.toLowerCase()] || 1;
+            } else {
+                // Convert from → EGP → to
+                const fromToEgp = historical[from.toLowerCase()] || 1;
+                const toToEgp = historical[to.toLowerCase()] || 1;
+                rate = toToEgp / fromToEgp;
+            }
         }
     } else {
-        // If no date is selected, use live rates
+        // No date selected → use live rates
         const key = `${from}-${to}`;
         rate = liveRates[key] || 1;
     }

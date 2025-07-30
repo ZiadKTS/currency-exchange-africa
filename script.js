@@ -131,11 +131,11 @@ function getRateByDate(selectedDate) {
     }
 
 // ✅ Future date validation
-  const today = new Date();
-  if (selected > today) {
-    alert('Please select a date that is not in the future.');
-    return;
-  }
+const today = new Date();
+if (date > today) {
+  alert('Please select a date that is not in the future.');
+  return null;
+}
 
     for (let i = 0; i < historicalRates.length; i++) {
         const current = new Date(historicalRates[i].start);

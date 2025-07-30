@@ -127,16 +127,21 @@ const historicalRates = [
     }
 ];
 
-// Calculates the number of months between two dates
+// Calculates the number of full months between two dates
 function getMonthsDifference(olderDate, newerDate) {
     const years = newerDate.getFullYear() - olderDate.getFullYear();
     const months = newerDate.getMonth() - olderDate.getMonth();
-    return (years * 12) + months;
+    return Math.max(0, (years * 12) + months);
 }
 
 // ===============================
 // Get Rate by Date (Updated Logic)
 function getRateByDate(selectedDate) {
+    if (!selectedDate) {
+        alert("Please select a valid date.");
+        return null;
+    }
+
     const dErrorDate = new Date('2024-09-17');
     const date = new Date(selectedDate);
     const isoDate = date.toISOString().slice(0, 10);
@@ -187,10 +192,11 @@ if (date > today) {
         };
     }
 
-    if (date < oldestSupported) {
+   if (date < oldestSupported) {
         alert("Sorry, we don't support conversions before January 1, 2023.");
         return null;
     }
+}
 
 // Conversion logic with fallback for missing historical data
 function handleConversion(from, to, amount, selectedDate = null) {

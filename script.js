@@ -130,6 +130,13 @@ function getRateByDate(selectedDate) {
         return null;
     }
 
+// ✅ Future date validation
+  const today = new Date();
+  if (selected > today) {
+    alert('Please select a date that is not in the future.');
+    return;
+  }
+
     for (let i = 0; i < historicalRates.length; i++) {
         const current = new Date(historicalRates[i].start);
         const next = i > 0 ? new Date(historicalRates[i - 1].start) : null;
@@ -151,9 +158,6 @@ function getRateByDate(selectedDate) {
 }
 // Conversion logic with fallback for missing historical data
 function handleConversion(from, to, amount, selectedDate = null) {
-    let rate = 1;
-
-   function handleConversion(amount, from, to, selectedDate, liveRates) {
     let rate = 1;
 
     if (selectedDate) {

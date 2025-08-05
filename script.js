@@ -29,12 +29,12 @@ function populateCurrencyOptions() {
 // Live Conversion Rates
 // ===============================
 const liveRates = { 
-    'EGP-USD': 1 / 60,      // Updated from 58 to 60
-    'EGP-EUR': 1 / 62.3,
-    'USD-EGP': 60,          // Updated from 58 to 60
-    'EUR-USD': 62.3 / 60,   // ≈ 1.0383 (if you want this updated too)
-    'USD-EUR': 60 / 62.3,   // ≈ 0.9631 (if you want this updated too)
-    'EUR-EGP': 62.3,
+    'EGP-USD': 1 / 56,      // Updated from 60 to 56
+    'EGP-EUR': 1 / 58.13,   // Updated accordingly (EUR ≈ 58.13)
+    'USD-EGP': 56,          // Updated from 60 to 56
+    'EUR-USD': 58.13 / 56,  // ≈ 1.038
+    'USD-EUR': 56 / 58.13,  // ≈ 0.963
+    'EUR-EGP': 58.13,       // Updated accordingly
 
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
@@ -55,23 +55,16 @@ const liveRates = {
     'TND-EGP': 0.19
 };
 
-// ===============================
-// Helper Function (optional)
-// ===============================
-function decreaseRate(rate, monthsBack) {
-    let newRate = rate;
-    const decreaseFactor = 0.95;
-    for (let i = 0; i < monthsBack; i++) {
-        newRate *= decreaseFactor;
-    }
-    return newRate;
-}
-
 // Historical Rates (By Period)
 // ===============================
 const historicalRates = [
     {
-        start: '2025-07-17',
+        start: '2025-08-05', // New block for today
+        usd: 56, eur: 58.13,
+        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
+    },
+    {
+        start: '2025-07-17', end: '2025-08-04', // Previous latest ends yesterday
         usd: 60, eur: 62.3,
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
     },
@@ -269,4 +262,5 @@ document.addEventListener("DOMContentLoaded", () => {
     populateCurrencyOptions();
     setupConversionForm();
 });
+
 

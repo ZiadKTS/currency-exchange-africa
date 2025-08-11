@@ -29,12 +29,12 @@ function populateCurrencyOptions() {
 // Live Conversion Rates
 // ===============================
 const liveRates = { 
-    'EGP-USD': 1 / 56,      // Updated from 60 to 56
-    'EGP-EUR': 1 / 58.13,   // Updated accordingly (EUR ≈ 58.13)
-    'USD-EGP': 56,          // Updated from 60 to 56
-    'EUR-USD': 58.13 / 56,  // ≈ 1.038
-    'USD-EUR': 56 / 58.13,  // ≈ 0.963
-    'EUR-EGP': 58.13,       // Updated accordingly
+    'EGP-USD': 1 / 58,                 // Updated from 56 to 58
+    'EGP-EUR': 1 / (58 * (58.13 / 56)),// ≈ 0.01661 (keeps EUR-USD ratio constant)
+    'USD-EGP': 58,                     // Updated from 56 to 58
+    'EUR-USD': 58.13 / 56,             // ≈ 1.038 (unchanged cross)
+    'USD-EUR': 56 / 58.13,             // ≈ 0.963 (unchanged cross)
+    'EUR-EGP': 58 * (58.13 / 56),      // ≈ 60.206... (updated accordingly)
 
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
@@ -59,12 +59,18 @@ const liveRates = {
 // ===============================
 const historicalRates = [
     {
-        start: '2025-08-05', // New block for today
+        start: '2025-08-11', // New block for today
+        usd: 58,
+        eur: 60.21, // rounded from 60.206...
+        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
+    },
+    {
+        start: '2025-08-05', end: '2025-08-10', // Previous latest now closed
         usd: 56, eur: 58.13,
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
     },
     {
-        start: '2025-07-17', end: '2025-08-04', // Previous latest ends yesterday
+        start: '2025-07-17', end: '2025-08-04',
         usd: 60, eur: 62.3,
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
     },
@@ -262,5 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
     populateCurrencyOptions();
     setupConversionForm();
 });
+
 
 

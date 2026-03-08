@@ -59,7 +59,7 @@ const liveRates = {
 // ===============================
 const historicalRates = [
     {
-        start: '2026-03-08', // New block starting today
+        start: '2026-03-04', // New block starting today
         usd: 59,
         eur: 59 * (58.13 / 56), // keeps EUR-USD ratio constant
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
@@ -274,6 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populateCurrencyOptions();
     setupConversionForm();
 });
+
 
 
 

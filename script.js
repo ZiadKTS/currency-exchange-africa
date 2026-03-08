@@ -29,12 +29,12 @@ function populateCurrencyOptions() {
 // Live Conversion Rates
 // ===============================
 const liveRates = { 
-    'EGP-USD': 1 / 58,                 // Updated from 56 to 58
-    'EGP-EUR': 1 / (58 * (58.13 / 56)),// ≈ 0.01661 (keeps EUR-USD ratio constant)
-    'USD-EGP': 58,                     // Updated from 56 to 58
-    'EUR-USD': 58.13 / 56,             // ≈ 1.038 (unchanged cross)
-    'USD-EUR': 56 / 58.13,             // ≈ 0.963 (unchanged cross)
-    'EUR-EGP': 58 * (58.13 / 56),      // ≈ 60.206... (updated accordingly)
+    'EGP-USD': 1 / 59,                  // Updated from 58 to 59
+    'EGP-EUR': 1 / (59 * (58.13 / 56)), // Updated accordingly while keeping EUR-USD ratio constant
+    'USD-EGP': 59,                      // Updated from 58 to 59
+    'EUR-USD': 58.13 / 56,              // ≈ 1.038 (unchanged cross)
+    'USD-EUR': 56 / 58.13,              // ≈ 0.963 (unchanged cross)
+    'EUR-EGP': 59 * (58.13 / 56),       // Updated accordingly
 
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
@@ -59,13 +59,19 @@ const liveRates = {
 // ===============================
 const historicalRates = [
     {
-        start: '2025-08-11', // New block for today
-        usd: 58,
-        eur: 60.21, // rounded from 60.206...
+        start: '2026-03-08', // New block starting today
+        usd: 59,
+        eur: 59 * (58.13 / 56), // keeps EUR-USD ratio constant
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
     },
     {
-        start: '2025-08-05', end: '2025-08-10', // Previous latest now closed
+        start: '2025-08-11', end: '2026-03-07', // Previous latest now closed
+        usd: 58,
+        eur: 60.21,
+        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
+    },
+    {
+        start: '2025-08-05', end: '2025-08-10',
         usd: 56, eur: 58.13,
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
     },
@@ -268,6 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populateCurrencyOptions();
     setupConversionForm();
 });
+
 
 
 

@@ -27,24 +27,22 @@ function populateCurrencyOptions() {
 }
 
 // ===============================
-// FX BASE RATE (EUR anchor logic)
+// EUR BASE RATIO (unchanged anchor)
 // ===============================
 const eurUsdRate = 58.13 / 56; // ≈ 1.0380357
 
 // ===============================
-// LIVE RATES
+// LIVE RATES (CURRENT = 61.70)
 // ===============================
 const liveRates = { 
     'EGP-USD': 1 / 61.70,
     'USD-EGP': 61.70,
 
-    // EUR cross rates (updated with new USD/EGP)
     'EUR-USD': eurUsdRate,
     'USD-EUR': 1 / eurUsdRate,
     'EUR-EGP': 61.70 * eurUsdRate,
     'EGP-EUR': 1 / (61.70 * eurUsdRate),
 
-    // Other currencies (unchanged)
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
     'KES-USD': 0.0069,
@@ -65,27 +63,27 @@ const liveRates = {
 };
 
 // ===============================
-// HISTORICAL RATES (BY PERIOD)
+// HISTORICAL RATES (FIXED STAGED STRUCTURE)
 // ===============================
 const historicalRates = [
     {
-        start: '2026-04-21', // ✅ NEW LIVE PERIOD STARTS TODAY
+        start: '2026-04-21', // TODAY
         usd: 61.70,
         eur: 61.70 * eurUsdRate,
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
     },
     {
-        start: '2026-03-04',
-        end: '2026-04-20', // ✅ closed correctly
-        usd: 59,
-        eur: 59 * eurUsdRate,
+        start: '2026-04-17',
+        end: '2026-04-20',
+        usd: 59.70,
+        eur: 59.70 * eurUsdRate,
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
     },
     {
         start: '2025-08-11',
-        end: '2026-03-03',
-        usd: 58,
-        eur: 60.21,
+        end: '2026-04-16',
+        usd: 59,
+        eur: 59 * eurUsdRate,
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
     },
     {
@@ -101,71 +99,6 @@ const historicalRates = [
         usd: 60,
         eur: 62.3,
         ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
-    },
-    {
-        start: '2025-07-04',
-        end: '2025-07-16',
-        usd: 58,
-        eur: 62.3,
-        ngn: 0.24, zar: 0.215, kes: 0.225, ghs: 0.165, tnd: 0.185
-    },
-    {
-        start: '2025-06-24',
-        usd: 61.8,
-        eur: 62.3,
-        ngn: 0.242, zar: 0.221, kes: 0.23, ghs: 0.168, tnd: 0.19
-    },
-    {
-        start: '2025-06-10',
-        end: '2025-06-23',
-        usd: 62.49,
-        eur: 63.0,
-        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
-    },
-    {
-        start: '2025-05-29',
-        end: '2025-06-09',
-        usd: 63,
-        eur: 63.5,
-        ngn: 0.244, zar: 0.222, kes: 0.231, ghs: 0.171, tnd: 0.191
-    },
-    {
-        start: '2025-05-18',
-        end: '2025-05-28',
-        usd: 64,
-        eur: 73.15,
-        ngn: 0.245, zar: 0.225, kes: 0.235, ghs: 0.172, tnd: 0.192
-    },
-    {
-        start: '2025-04-15',
-        end: '2025-05-17',
-        usd: 64,
-        eur: 72.1,
-        ngn: 0.244, zar: 0.224, kes: 0.233, ghs: 0.171, tnd: 0.191
-    },
-    {
-        start: '2025-03-10',
-        end: '2025-04-14',
-        usd: 64,
-        eur: 71.2,
-        ngn: 0.243, zar: 0.222, kes: 0.231, ghs: 0.17, tnd: 0.19
-    },
-    {
-        start: '2025-01-01',
-        end: '2025-03-09',
-        usd: 64,
-        eur: 70,
-        ngn: 0.242, zar: 0.221, kes: 0.23, ghs: 0.168, tnd: 0.189
-    },
-    {
-        start: '2024-12-10',
-        usd: 60,
-        eur: 68.4
-    },
-    {
-        start: '2024-07-01',
-        usd: 57,
-        eur: 64.98
     }
 ];
 

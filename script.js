@@ -32,16 +32,22 @@ function populateCurrencyOptions() {
 const eurUsdRate = 58.13 / 56; // ≈ 1.0380357
 
 // ===============================
-// LIVE RATES (CURRENT = 61.70)
+// CURRENT EXCHANGE RATE
+// Effective: 25 June 2026
 // ===============================
-const liveRates = { 
-    'EGP-USD': 1 / 61.70,
-    'USD-EGP': 61.70,
+const currentUsdEgp = 59.00;
+
+// ===============================
+// LIVE RATES
+// ===============================
+const liveRates = {
+    'EGP-USD': 1 / currentUsdEgp,
+    'USD-EGP': currentUsdEgp,
 
     'EUR-USD': eurUsdRate,
     'USD-EUR': 1 / eurUsdRate,
-    'EUR-EGP': 61.70 * eurUsdRate,
-    'EGP-EUR': 1 / (61.70 * eurUsdRate),
+    'EUR-EGP': currentUsdEgp * eurUsdRate,
+    'EGP-EUR': 1 / (currentUsdEgp * eurUsdRate),
 
     'NGN-USD': 0.0024,
     'ZAR-USD': 0.062,
@@ -55,6 +61,7 @@ const liveRates = {
     'USD-GHS': 5.9,
     'USD-TND': 3.1,
 
+    // Custom rates (kept unchanged)
     'NGN-EGP': 0.243,
     'ZAR-EGP': 0.22,
     'KES-EGP': 0.23,
@@ -63,42 +70,75 @@ const liveRates = {
 };
 
 // ===============================
-// HISTORICAL RATES (FIXED STAGED STRUCTURE)
+// HISTORICAL RATES
 // ===============================
 const historicalRates = [
     {
-        start: '2026-04-21', // TODAY
+        // Current rate
+        start: '2026-06-25',
+        usd: 59.00,
+        eur: currentUsdEgp * eurUsdRate,
+        ngn: 0.243,
+        zar: 0.22,
+        kes: 0.23,
+        ghs: 0.17,
+        tnd: 0.19
+    },
+    {
+        // Previous rate
+        start: '2026-04-21',
+        end: '2026-06-24',
         usd: 61.70,
         eur: 61.70 * eurUsdRate,
-        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
+        ngn: 0.243,
+        zar: 0.22,
+        kes: 0.23,
+        ghs: 0.17,
+        tnd: 0.19
     },
     {
         start: '2026-04-17',
         end: '2026-04-20',
         usd: 59.70,
         eur: 59.70 * eurUsdRate,
-        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
+        ngn: 0.243,
+        zar: 0.22,
+        kes: 0.23,
+        ghs: 0.17,
+        tnd: 0.19
     },
     {
         start: '2025-08-11',
         end: '2026-04-16',
         usd: 59,
         eur: 59 * eurUsdRate,
-        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
+        ngn: 0.243,
+        zar: 0.22,
+        kes: 0.23,
+        ghs: 0.17,
+        tnd: 0.19
     },
     {
         start: '2025-08-05',
         end: '2025-08-10',
         usd: 56,
         eur: 58.13,
-        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
+        ngn: 0.243,
+        zar: 0.22,
+        kes: 0.23,
+        ghs: 0.17,
+        tnd: 0.19
     },
     {
         start: '2025-07-17',
         end: '2025-08-04',
         usd: 60,
         eur: 62.3,
-        ngn: 0.243, zar: 0.22, kes: 0.23, ghs: 0.17, tnd: 0.19
+        ngn: 0.243,
+        zar: 0.22,
+        kes: 0.23,
+        ghs: 0.17,
+        tnd: 0.19
     }
 ];
 
